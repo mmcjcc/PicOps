@@ -1,0 +1,43 @@
+<!DOCTYPE hibernate-configuration PUBLIC 
+    "-//Hibernate/Hibernate Configuration DTD//EN"
+    "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<!-- Note, letting hibernate manage the connection pool. -->
+<hibernate-configuration>
+    <session-factory>
+    
+        <!-- Settings for a Postgress database. -->
+        <property name="dialect">org.hibernate.dialect.PostgreSQLDialect</property>
+        <property name="connection.driver_class">org.postgresql.Driver</property>
+        <property name="connection.url">jdbc:postgresql://localhost:5432/PicOps</property>
+        <property name="connection.username">postgres</property>
+        <property name="connection.password">!postgres!</property>
+
+        <!-- Use the C3P0 connection pool. -->
+        <property name="c3p0.min_size">3</property>
+        <property name="c3p0.max_size">10</property>
+        <property name="c3p0.timeout">1800</property>
+    
+        <!-- Disable second-level cache. -->
+        <property name="cache.provider_class">org.hibernate.cache.NoCacheProvider</property>
+        <property name="cache.use_query_cache">false</property>
+        <property name="cache.use_minimal_puts">false</property>
+        <property name="max_fetch_depth">3</property>
+    
+        <!-- Print SQL to stdout. -->
+        <property name="show_sql">true</property>
+        <property name="format_sql">true</property>
+    
+           
+        <!-- Bind the getCurrentSession() method to the thread. -->
+        <property name="current_session_context_class">thread</property>
+
+        <!-- Hibernate XML mapping files -->
+        <mapping resource="User.hbm.xml"/>
+        <mapping resource="Picture.hbm.xml"/>
+        <mapping resource="Thumbnail.hbm.xml"/>
+        <mapping resource="Album.hbm.xml"/>
+        <mapping resource="Comments.hbm.xml"/>
+        <mapping resource="SiteConfig.hbm.xml"/>
+    </session-factory>
+
+</hibernate-configuration>
