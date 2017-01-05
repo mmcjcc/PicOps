@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+
+    <class name="com.ezjcc.picops.Picture" table="images">
+
+         <id name="id" type="string" unsaved-value="null" >
+           <column name="ID" sql-type="char(32)" not-null="true"/>
+           <generator class="uuid"/>
+        </id>
+         <property name="albumID" type="string" >
+           <column name="albumid" sql-type="char(32)" not-null="true"/>
+         </property>
+        <property name="image">
+            <column name="image" sql-type="binary" not-null="true"/>
+        </property>
+        
+        <property name="imageType">
+            <column name="imagetype" sql-type="varchar(4)" not-null="true"/>
+        </property>
+        
+        <property name="uploadDate">
+            <column name="timestamp" sql-type="timestamp" not-null="true"/>
+        </property>
+        
+        <property name="imageDescription">
+            <column name="imagedescription" sql-type="varchar(1000)" />
+        </property>
+        
+        <property name="imageDate">
+            <column name="imageDate" sql-type="varchar(10)" />
+        </property>
+        
+        <property name="imagePhotographer">
+            <column name="imagePhotographer" sql-type="varchar(100)" />
+        </property>
+        
+        <property name="imageTitle">
+            <column name="imagetitle" sql-type="varchar(200)" />
+        </property>
+        
+        <property name="fileName">
+            <column name="filename" sql-type="varchar(255)" />
+        </property>
+        
+        <property name="pictureSize">
+            <column name="imagesize" sql-type="int8" not-null="true" />
+        </property>
+     </class>
+</hibernate-mapping>

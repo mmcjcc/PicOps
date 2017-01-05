@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+
+    <class name="com.ezjcc.picops.Thumbnail" table="thumbnails">
+
+         <id name="id" type="string" unsaved-value="null" >
+           <column name="ID" sql-type="char(32)" not-null="true"/>
+           
+        </id>
+
+        <property name="image">
+            <column name="image" sql-type="binary" not-null="true"/>
+        </property>
+        
+      
+     </class>
+</hibernate-mapping>

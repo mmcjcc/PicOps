@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+
+    <class name="com.ezjcc.picops.SiteConfig" table="siteconfig">
+
+    <id name="id" unsaved-value="null" >
+            <column name="id" sql-type="numeric" not-null="true"/>
+            
+        </id>
+          
+        <property name="emailAddress">
+            <column name="senderemail" sql-type="varchar(200)" not-null="true"/>
+        </property>
+        <property name="webServer">
+            <column name="webserver" sql-type="varchar(200)" not-null="true"/>
+        </property>
+        <property name="mailServer">
+            <column name="mailserver" sql-type="varchar(200)" not-null="true"/>
+        </property>
+         <property name="quota">
+            <column name="quota" sql-type="int4" not-null="true"/>
+        </property>
+     </class>
+</hibernate-mapping>
+
