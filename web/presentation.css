@@ -1,0 +1,462 @@
+
+/* Links */
+a:link {color: #2A3248; text-decoration: underline; }
+a:active {color: #2A3248; text-decoration: underline; }
+a:visited {color: #2A3248; text-decoration: underline; }
+a:hover {color: red; text-decoration: underline; }
+a img {border: none;}
+
+a:link.redlink {
+color: #993333; 
+text-decoration: underline; 
+font-size: 10pt;
+}
+a:visited.redlink {
+color: #993333; 
+text-decoration: underline; 
+font-size: 10pt;
+}
+/* Presentation Stylesheet */ 
+
+h1, h2, h3, p, table {
+ margin: 0;
+ padding: 15px;
+ }
+
+h4 {
+ margin:0; 
+ padding: 5px 0;
+ }
+h4.redtext {
+ margin:0; 
+ padding: 5px 0;
+ color: #993333;
+ }
+td.redtext {
+color: red;
+} 
+ p.top {
+ font-size: 18pt; 
+ color: #C0C0C0;
+ padding: 15px;
+ } 
+ 
+ p.footer {
+ font-size: 10pt; 
+ color:#C0C0C0;
+ }
+
+p.redtext {
+ color: red;
+}
+p.navytext {
+ color: navy;
+}
+p.redtextbold {
+ color: red;
+ font-weight: bold;
+}
+p.redtextmedium {
+ color: red;  
+ font-size: 18pt;
+}
+p.redtextbig {
+ color: red;
+ font-size: large;
+}
+p.smallfont {
+font-size: 9pt;
+}
+table.albums {
+table-layout: fixed;
+word-wrap: break-word;
+font-size: 10pt;
+font-weight: bold;
+color: white;
+background-color: #556593;
+width: 695px;
+max-width: 695px;
+margin-left: auto;
+margin-right: auto;;
+}
+table.albuminfo {
+font-size: 12pt;
+border: 1px solid #556593;
+width: 300px;
+text-align: left;
+margin-left: auto;
+margin-right: auto;
+background-color: #556593;
+color: white;
+}
+table.albuminfo td{
+ border-width: 1px;
+ padding: 1px;
+ border-style: inset;
+ border-color: gray;
+ 
+}
+table.addalbum {
+ font-weight: bold;
+ margin-left: 15px;
+ margin-right: auto;
+ color: navy;
+}
+table.showphotoinfo {
+ font-weight: bold;
+ margin-left: 15px;
+ margin-right: auto;
+ color: navy;
+}
+table.showphotoinfo td{
+padding: 5px;
+}
+table.addpic {
+ font-weight: bold;
+ margin-left: 15px;
+ margin-right: auto;
+ color: navy;
+}
+table.slideshowallign {
+  width: 100%;
+  color: navy;
+}
+table.pictures {
+table-layout: fixed;
+font-weight: bold;
+font-size: 9pt;
+width: 695px;
+max-width: 695px;
+margin-left: auto;
+margin-right: auto;
+color: white;
+background-color: #556593;
+}
+
+table.filmstrip {
+table-layout: fixed;
+height: 138x;
+width: 695; 
+margin-left: auto;
+margin-right: auto;
+}
+table.filmstrip td{
+text-align: center;
+background-image: url(filmstrip_mod4.jpg);
+width: 132px;
+height: 138px;
+} 
+img.film {
+    /* for CSS 2.0 compliant browsers */
+    max-height: 120px; 
+
+}
+table.pictureinfoaddcomment {
+width: 695px;
+color: navy;
+padding: 5px;
+margin-left: auto;
+margin-right: auto;
+}
+table.picturesbig {
+border-collapse: collapse;
+font-size: 12pt;
+color: navy;
+border: 1px solid #556593;
+text-align: left;
+margin-left: auto;
+margin-right: auto;
+}
+table.picturesbig td{
+ border: 1px solid #556593;;
+ 
+ }
+table.picturesbig tr{
+ border-width: 1px;
+ border-style: inset;
+ border-color: navy;
+ background: #BCCBF5;
+ 
+}
+table.addcomments {
+font-size: 12pt;
+border: 1px solid #556593;
+text-align: left;
+margin-left: auto;
+margin-right: auto;
+}
+table.comments {
+font-size: 12pt;
+vertical-align: top;
+border: 1px solid #556593;
+text-align: left;
+width: 50%;
+margin-left: auto;
+margin-right: auto;
+color: navy;
+}
+
+table.comment {
+font-size: 12pt;
+vertical-align: top;
+text-align: left;
+width: 100%;
+margin-left: auto;
+margin-right: auto;
+color: navy;
+}
+table.commentcolor {
+font-size: 12pt;
+background: #BCCBF5;
+vertical-align: top;
+text-align: left;
+width: 100%;
+margin-left: auto;
+margin-right: auto;
+color: navy;
+}
+table.login {
+font-size: 12pt;
+font-weight: bold;
+vertical-align: top;
+text-align: centerS;
+width: 35%;
+margin-left: 15px;
+margin-right: auto;
+}
+table.centered {
+margin-left: auto;
+margin-right: auto;
+}
+font.bold10 {
+font-size: 10pt;
+font-weight: bold;
+}
+.picborder img{
+border: 1px solid #556593;
+}
+.picborder:hover img{
+border: 2px solid white;
+}
+.picborder:hover{
+color: red;
+}
+.button { /* CSS for this from http://sophie-g.net/jobs/css/e_buttons.htm*/
+display: block;
+background-color: transparent;
+background-image: url(buttonBackground.gif);
+background-repeat: no-repeat;
+width: 132px;
+height: 28px;
+margin: 5px auto;
+padding: 5px 0 0 0;
+text-align: center;
+font-family: Arial, Helvetica, sans-serif;
+font-size: 100%;
+font-weight: bold;
+text-decoration: none;
+}
+.button:link, a.button:visited {
+color: #002577;
+text-decoration: none;
+}
+a.button:hover, a.button:active {
+background-position: 0 -36px;
+color: #FF7200;
+text-decoration: none;
+}
+
+.input-box2
+{
+color: navy;
+background: #BCCBF5;
+border: #26a solid 1px
+}
+/* Login form */
+
+label
+{
+width: 5.5em;
+float: left;
+font-weight: bold;
+text-align: right;
+color: navy;
+margin: 0 1em 10px 0;
+clear: both
+}
+
+.input-box
+{
+margin-bottom: 10px;
+color: navy;
+background: #BCCBF5;
+border: #26a solid 1px
+}
+
+
+.submit-button
+{
+margin-left: 1em;
+clear: both;
+color: #000;
+background: #BCCBF5;
+background-image: url(buttonBackground.gif);
+background-repeat: no-repeat;
+width: 100px;
+height: 23px;
+text-align: center;
+font-family: Arial, Helvetica, sans-serif;
+font-size: 100%;
+font-weight: bold;
+text-decoration: none;
+border: 2px #9cf outset
+}
+.submit-button-small
+{
+margin-left: 5px;
+clear: both;
+color: #000;
+background: #BCCBF5;
+background-image: url(buttonBackground.gif);
+background-repeat: no-repeat;
+width: 75px;
+height: 23px;
+text-align: center;
+font-family: Arial, Helvetica, sans-serif;
+font-size: 100%;
+font-weight: bold;
+text-decoration: none;
+border: 2px #9cf outset
+}
+fieldset
+{
+border: #26a solid 1px;
+width: 20em;
+margin-left: 15px;
+margin-right: auto;
+}
+
+legend
+{
+background: #A3BBF8;
+font-weight: bold;
+border: #26a solid 1px;
+padding: 1px 10px
+} 
+/* End Login form */
+
+/* form */
+
+label.forgotform
+{
+width: 10em;
+float: left;
+font-weight: bold;
+text-align: right;
+color: navy;
+margin: 0 1em 10px 0;
+clear: both
+}
+label.forgotformnotice
+{
+width: 10em;
+float: left;
+font-weight: bold;
+text-align: right;
+color: red;
+margin: 0 1em 10px 0;
+clear: both
+}
+fieldset.fieldforgotform
+{
+border: #26a solid 1px;
+width: 80%;
+height: auto;
+margin-left: 15px;
+margin-right: auto;
+}
+
+legend.form
+{
+background: #A3BBF8;
+font-weight: bold;
+border: #26a solid 1px;
+padding: 1px 10px
+} 
+/* End forgot form */
+
+label.searchform
+{
+width: 5em;
+float: left;
+font-weight: bold;
+text-align: right;
+color: navy;
+margin: 0 1em 10px 0;
+clear: both
+}
+
+fieldset.fieldsearchform
+{
+border: #26a solid 1px;
+width: 70%;
+margin-left: 15px;
+margin-right: auto;
+}
+
+legend.search
+{
+background: #A3BBF8;
+font-weight: bold;
+border: #26a solid 1px;
+padding: 1px 10px
+} 
+.submit-button-search
+{
+color: #000;
+background: #BCCBF5;
+background-image: url(buttonBackground.gif);
+background-repeat: no-repeat;
+width: 80px;
+height: 20px;
+text-align: center;
+font-family: Arial, Helvetica, sans-serif;
+font-weight: bold;
+text-decoration: none;
+border: 2px #9cf outset
+}
+/* End search form */
+
+
+/* Signup form */
+
+
+
+label.signupform
+{
+width: 10em;
+float: left;
+font-weight: bold;
+text-align: right;
+color: navy;
+margin: 0 1em 10px 0;
+clear: both
+}
+
+fieldset.fieldsignupform
+{
+width: 85%;
+border: #26a solid 1px;
+margin-left: 15px;
+margin-right: auto;
+
+}
+
+legend.signupform
+{
+background: #A3BBF8;
+font-weight: bold;
+border: #26a solid 1px;
+padding: 1px 10px
+} 
+/* End Signup form */

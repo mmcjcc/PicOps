@@ -1,0 +1,80 @@
+
+/* Layout Stylesheet */ 
+
+body {
+ margin:20px;
+ background:#5E6E99;
+ color: #333333;
+ text-align:center;
+ padding:0;
+ }
+
+#outer {
+ text-align:left;
+ border:solid #000000;
+ border-width:1px 1px 1px 1px; 
+ width:875px;
+ margin:auto;
+
+ }
+
+#hdr {
+ height:75px;
+ background:#556593;
+ color: #333333;
+ }
+
+#bar {
+ height: 25px;
+ background: #4B5D8D;
+ color: #C0C0C0;
+ border: solid #000000;	
+ border-width: 1px 0 1px 0;
+ }
+
+#bodyblock {
+ height: auto;
+ position: relative;
+ background: #97A6BA;
+ color: #333333;
+ padding: 0;
+
+ }
+
+#l-col {
+ float: left;
+ position: relative;
+ background: #97A6BA;
+ color: #2A3248;
+ width: 145px;
+ height: auto;
+}
+
+#cont {
+ width: 720px;
+
+ min-height: 600px;
+ height: auto !important; /* Crappy IE workaround for min-height not working */
+ height: 600px;
+ background: #ffffff;
+ color: #2A3248;
+ border: solid #000000;	
+ border-width: 0 0 0 1px; 
+ text-align: left;
+ }
+ #slideshow {
+ width: auto;
+ min-height: 475px;
+ height: auto !important; /* Crappy IE workaround for min-height not working */
+ height: 475px;
+ 
+ }
+#ftr {
+ width: 875px;
+ height: 40px;
+ background: #4B5D8D;
+ color: #333333;
+ border: solid #000000;	
+ border-width: 1px 0 0 0; 
+ }
+ 
