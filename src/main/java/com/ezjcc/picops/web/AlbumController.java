@@ -2,6 +2,7 @@ package com.ezjcc.picops.web;
 
 import com.ezjcc.picops.album.Album;
 import com.ezjcc.picops.album.AlbumService;
+import com.ezjcc.picops.picture.PictureService;
 import com.ezjcc.picops.user.User;
 import java.security.Principal;
 import java.util.List;
@@ -17,10 +18,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class AlbumController {
 
     private final AlbumService albums;
+    private final PictureService pictures;
     private final CurrentUser currentUser;
 
-    public AlbumController(AlbumService albums, CurrentUser currentUser) {
+    public AlbumController(AlbumService albums, PictureService pictures, CurrentUser currentUser) {
         this.albums = albums;
+        this.pictures = pictures;
         this.currentUser = currentUser;
     }
 
@@ -61,8 +64,7 @@ public class AlbumController {
         if (viewer != null) {
             model.addAttribute("initials", CurrentUser.initials(viewer.getDisplayName()));
         }
-        model.addAttribute("pictures", model.containsAttribute("pictures")
-            ? model.getAttribute("pictures") : List.of());
+        model.addAttribute("pictures", pictures.listForAlbum(album.getId()));
         return "album";
     }
 

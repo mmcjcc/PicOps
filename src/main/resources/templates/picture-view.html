@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${album.title} + ' — PicOps'">Photo — PicOps</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<header class="appbar">
+    <a class="brand" th:href="@{/}">
+        <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true">
+            <rect x="1" y="3" width="20" height="16" rx="3" fill="var(--accent)"/>
+            <circle cx="4.5" cy="6.5" r="1.1" fill="var(--bg)"/><circle cx="4.5" cy="11" r="1.1" fill="var(--bg)"/><circle cx="4.5" cy="15.5" r="1.1" fill="var(--bg)"/>
+            <circle cx="17.5" cy="6.5" r="1.1" fill="var(--bg)"/><circle cx="17.5" cy="11" r="1.1" fill="var(--bg)"/><circle cx="17.5" cy="15.5" r="1.1" fill="var(--bg)"/>
+            <circle cx="11" cy="11" r="3.4" fill="none" stroke="var(--bg)" stroke-width="1.6"/>
+        </svg>
+        PicOps
+    </a>
+    <div class="appbar-right" th:if="${authenticated}">
+        <form th:action="@{/logout}" method="post" style="margin:0">
+            <button class="btn ghost" type="submit">Sign out</button>
+        </form>
+        <div class="avatar" th:text="${initials}">TU</div>
+    </div>
+    <div class="appbar-right" th:if="${!authenticated}">
+        <a class="btn ghost" th:href="@{/login}">Sign in</a>
+    </div>
+</header>
+
+<main class="appmain">
+    <div class="toolbar">
+        <a class="back" th:href="@{/albums/{id}(id=${album.id})}"
+           th:text="'← ' + ${album.title}">← Album</a>
+        <div class="spacer"></div>
+        <form th:if="${isOwner}" th:action="@{/pictures/{id}/delete(id=${picId})}" method="post"
+              style="margin:0" onsubmit="return confirm('Delete this photo?')">
+            <button class="btn ghost" type="submit">Delete photo</button>
+        </form>
+    </div>
+
+    <div class="photonav">
+        <a class="btn ghost" th:if="${prevId != null}"
+           th:href="@{/pictures/{id}/view(id=${prevId})}">← Previous</a>
+        <span th:if="${prevId == null}"></span>
+        <a class="btn ghost" th:if="${nextId != null}"
+           th:href="@{/pictures/{id}/view(id=${nextId})}">Next →</a>
+        <span th:if="${nextId == null}"></span>
+    </div>
+
+    <div class="photostage">
+        <img th:src="@{/pictures/{id}(id=${picId})}" alt="photo">
+    </div>
+</main>
+</body>
+</html>
