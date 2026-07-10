@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sign in — PicOps</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<div class="login-wrap">
+    <div class="login-card">
+        <div class="login-brand">
+            <svg width="24" height="24" viewBox="0 0 22 22" aria-hidden="true">
+                <rect x="1" y="3" width="20" height="16" rx="3" fill="var(--accent)"/>
+                <circle cx="4.5" cy="6.5" r="1.1" fill="var(--bg)"/><circle cx="4.5" cy="11" r="1.1" fill="var(--bg)"/><circle cx="4.5" cy="15.5" r="1.1" fill="var(--bg)"/>
+                <circle cx="17.5" cy="6.5" r="1.1" fill="var(--bg)"/><circle cx="17.5" cy="11" r="1.1" fill="var(--bg)"/><circle cx="17.5" cy="15.5" r="1.1" fill="var(--bg)"/>
+                <circle cx="11" cy="11" r="3.4" fill="none" stroke="var(--bg)" stroke-width="1.6"/>
+            </svg>
+            PicOps
+        </div>
+        <p class="login-sub">Online Photo System — since 2005</p>
+
+        <div th:if="${param.error}" class="alert error">
+            Wrong username or password. Try again.
+        </div>
+        <div th:if="${param.loggedout}" class="alert info">
+            You're signed out.
+        </div>
+
+        <form th:action="@{/login}" method="post">
+            <div class="field">
+                <label for="username">Username</label>
+                <input id="username" name="username" type="text" autocomplete="username" autofocus required>
+            </div>
+            <div class="field">
+                <label for="password">Password</label>
+                <input id="password" name="password" type="password" autocomplete="current-password" required>
+            </div>
+            <button class="btn" type="submit">Sign in</button>
+        </form>
+
+        <p class="login-foot">Account signup returns with the mail flow — dev uses the seeded account.</p>
+    </div>
+</div>
+</body>
+</html>

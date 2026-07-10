@@ -1,0 +1,34 @@
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: picops
+      POSTGRES_USER: picops
+      POSTGRES_PASSWORD: picops
+    ports:
+      - "5433:5432"   # exposed for local tooling; app talks over the compose network
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U picops -d picops"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
+  app:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "8081:8080"   # 8080 is the legacy app
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/picops
+      DB_USER: picops
+      DB_PASSWORD: picops
+      SPRING_PROFILES_ACTIVE: dev
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:
