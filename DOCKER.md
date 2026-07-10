@@ -14,6 +14,13 @@ docker compose exec -T db psql -U postgres -d PicOps < docker/seed.sql
 
 Then open http://localhost:8080 and log in as `testuser` / `picops123`.
 
+Optional — generate sample albums with random images (4 albums, 24 pictures):
+
+```bash
+docker cp docker/Seeder.java picops-app-1:/tmp/
+docker compose exec app bash -c 'cd /tmp && JAR=/usr/local/tomcat/webapps/ROOT/WEB-INF/lib/postgresql-42.7.7.jar && javac -cp $JAR Seeder.java && java -Djava.awt.headless=true -cp /tmp:$JAR Seeder'
+```
+
 - The schema is created automatically on first app startup (`hbm2ddl.auto=update`).
 - Pictures live in the `picops_pgdata` named volume; `docker compose down` keeps
   it, `docker compose down -v` wipes it.
