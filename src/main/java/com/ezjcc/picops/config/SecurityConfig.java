@@ -17,7 +17,7 @@ public class SecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/login", "/css/**", "/error").permitAll()
+                .requestMatchers("/login", "/signup", "/activate", "/css/**", "/error").permitAll()
                 // public-album views; controllers enforce per-album visibility,
                 // continuing the 2005 thesis: access is mediated by the app, not the URL
                 .requestMatchers(HttpMethod.GET, "/albums/*", "/pictures/**", "/u/**").permitAll()

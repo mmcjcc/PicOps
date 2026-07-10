@@ -26,6 +26,12 @@
         <div th:if="${param.loggedout}" class="alert info">
             You're signed out.
         </div>
+        <div th:if="${param.activated}" class="alert info">
+            Account activated — sign in below.
+        </div>
+        <div th:if="${param.activationfailed}" class="alert error">
+            That activation link is invalid or expired. Sign up again to get a new one.
+        </div>
 
         <form th:action="@{/login}" method="post">
             <div class="field">
@@ -39,7 +45,7 @@
             <button class="btn" type="submit">Sign in</button>
         </form>
 
-        <p class="login-foot">Account signup returns with the mail flow — dev uses the seeded account.</p>
+        <p class="login-foot">New here? <a th:href="@{/signup}">Create an account</a></p>
     </div>
 </div>
 </body>

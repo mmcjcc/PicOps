@@ -30,5 +30,6 @@ Flyway migrations · PostgreSQL 16 · GitHub Actions (build + CodeQL)
 - [x] Slice 2 — albums CRUD + visibility (private albums 404 for non-owners)
 - [x] Slice 3 — upload (byte-sniff validation, quota), thumbnails, authorized image serving
 - [x] Slice 4 — comments, search, public profile page (/u/username), prev/next photo nav
-- [ ] Slice 5 — signup + mail (Mailpit), OAuth (Google), htmx polish (inline comments, drag-drop upload)
-- [ ] Slice 6 — Azure deployment
+- [x] Slice 5 — signup with email activation (Mailpit at http://localhost:8025 in dev)
+- [ ] Slice 6 — Google OAuth (needs client credentials), htmx polish (inline comments, drag-drop upload)
+- [ ] Slice 7 — Azure deployment

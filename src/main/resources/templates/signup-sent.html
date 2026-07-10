@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Check your email — PicOps</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<div class="login-wrap">
+    <div class="login-card">
+        <div class="login-brand">Almost there</div>
+        <p class="login-sub">
+            We sent an activation link to <b th:text="${email}">you</b>.
+            Click it within 48 hours to finish creating your account.
+        </p>
+        <p class="login-foot"><a th:href="@{/login}">Back to sign in</a></p>
+    </div>
+</div>
+</body>
+</html>

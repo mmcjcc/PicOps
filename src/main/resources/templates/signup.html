@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sign up — PicOps</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<div class="login-wrap">
+    <div class="login-card">
+        <div class="login-brand">Create your account</div>
+        <p class="login-sub">Albums, photos, and sharing — activation link by email.</p>
+
+        <div th:if="${error}" class="alert error" th:text="${error}"></div>
+
+        <form th:action="@{/signup}" method="post">
+            <div class="field">
+                <label for="username">Username</label>
+                <input id="username" name="username" type="text" maxlength="30" required
+                       th:value="${username}" autocomplete="username">
+            </div>
+            <div class="field">
+                <label for="displayName">Display name</label>
+                <input id="displayName" name="displayName" type="text" maxlength="60" required
+                       th:value="${displayName}" autocomplete="name">
+            </div>
+            <div class="field">
+                <label for="email">Email</label>
+                <input id="email" name="email" type="email" maxlength="254" required
+                       th:value="${email}" autocomplete="email">
+            </div>
+            <div class="field">
+                <label for="password">Password (8+ characters)</label>
+                <input id="password" name="password" type="password" minlength="8" maxlength="72"
+                       required autocomplete="new-password">
+            </div>
+            <button class="btn" type="submit">Create account</button>
+        </form>
+
+        <p class="login-foot">Already have an account? <a th:href="@{/login}">Sign in</a></p>
+    </div>
+</div>
+</body>
+</html>

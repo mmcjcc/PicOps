@@ -16,6 +16,12 @@ services:
       timeout: 3s
       retries: 12
 
+  mail:
+    image: axllent/mailpit
+    restart: unless-stopped
+    ports:
+      - "8025:8025"   # web UI for reading dev mail
+
   app:
     build: .
     restart: unless-stopped
@@ -25,10 +31,14 @@ services:
       DB_URL: jdbc:postgresql://db:5432/picops
       DB_USER: picops
       DB_PASSWORD: picops
+      MAIL_HOST: mail
+      MAIL_PORT: 1025
       SPRING_PROFILES_ACTIVE: dev
     depends_on:
       db:
         condition: service_healthy
+      mail:
+        condition: service_started
 
 volumes:
   pgdata:
