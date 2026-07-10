@@ -6,9 +6,6 @@
 
 package com.ezjcc.picops;
 
-import com.sun.image.codec.jpeg.JPEGCodec;
-import com.sun.image.codec.jpeg.JPEGEncodeParam;
-import com.sun.image.codec.jpeg.JPEGImageEncoder;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -19,8 +16,10 @@ import java.io.InputStream;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Vector;
+import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReadParam;
+import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageReader;
 import javax.imageio.ImageTypeSpecifier;
 import javax.imageio.ImageWriter;
@@ -314,8 +313,7 @@ public class PictureUtil {
                 return status; //problem creating the thubnail, don't go any further
             } else{
                 ByteArrayOutputStream out = new ByteArrayOutputStream(); //convert thumbnail to a JPEG encoded byte[] first
-                JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(out); //jpeg encoder outputs to a stream, in this case we use a byte[] because that's how this image will be stored
-                encoder.encode(thumbnail);
+                ImageIO.write(thumbnail, "jpeg", out); //javax.imageio replaces the Oracle-only com.sun JPEG codec
                 tn.setImage(out.toByteArray());
                 System.out.println("User Uploaded file of "+img.length+" Bytes ->"+ pic.getImage().length/1024 +" KB -> " + (float)img.length/1048576+ " MB" );
                 Session session = HibernateUtil.currentSession(); //get a session
@@ -358,10 +356,15 @@ public class PictureUtil {
                 BufferedImage temp = createScaledPic(iout, scaleSize);
                 System.out.println("Made it to output encoder");//debug
                 response.setContentType("image/JPEG");
-                JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(out);
-                JPEGEncodeParam param = encoder.getDefaultJPEGEncodeParam(temp);
-                param.setQuality(0.70f, true);
-                encoder.encode(temp, param);
+                ImageWriter encoder = (ImageWriter)ImageIO.getImageWritersByFormatName("jpeg").next(); //javax.imageio replaces the Oracle-only com.sun JPEG codec
+                ImageWriteParam param = encoder.getDefaultWriteParam();
+                param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+                param.setCompressionQuality(0.70f);
+                ImageOutputStream ios = ImageIO.createImageOutputStream(out);
+                encoder.setOutput(ios);
+                encoder.write(null, new IIOImage(temp, null, null), param);
+                ios.flush();
+                encoder.dispose();
                 out.close();
                 temp=null; //clean up, not sure if this actually helps free up memory
                 encoder = null;

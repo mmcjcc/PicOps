@@ -13,7 +13,7 @@
         </id>
 
         <property name="image">
-            <column name="image" sql-type="binary" not-null="true"/>
+            <column name="image" sql-type="bytea" not-null="true"/>
         </property>
         
       

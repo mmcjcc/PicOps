@@ -8,7 +8,8 @@
         <!-- Settings for a Postgress database. -->
         <property name="dialect">org.hibernate.dialect.PostgreSQLDialect</property>
         <property name="connection.driver_class">org.postgresql.Driver</property>
-        <property name="connection.url">jdbc:postgresql://localhost:5432/PicOps</property>
+        <!-- "db" is the Postgres service name in docker-compose.yml -->
+        <property name="connection.url">jdbc:postgresql://db:5432/PicOps</property>
         <property name="connection.username">postgres</property>
         <property name="connection.password">!postgres!</property>
 
@@ -23,6 +24,9 @@
         <property name="cache.use_minimal_puts">false</property>
         <property name="max_fetch_depth">3</property>
     
+        <!-- Create/update the schema from the .hbm.xml mappings on startup (dev convenience). -->
+        <property name="hbm2ddl.auto">update</property>
+
         <!-- Print SQL to stdout. -->
         <property name="show_sql">true</property>
         <property name="format_sql">true</property>

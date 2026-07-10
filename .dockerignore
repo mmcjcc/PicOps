@@ -1,0 +1,6 @@
+bin/
+build/
+nbproject/
+.git/
+*.fpr
+*.fpr.scan

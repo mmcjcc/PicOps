@@ -1,7 +1,4 @@
 package com.ezjcc.picops;
-import com.sun.image.codec.jpeg.JPEGCodec;
-import com.sun.image.codec.jpeg.JPEGEncodeParam;
-import com.sun.image.codec.jpeg.JPEGImageEncoder;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.Iterator;

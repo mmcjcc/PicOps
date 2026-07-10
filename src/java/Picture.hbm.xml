@@ -15,7 +15,7 @@
            <column name="albumid" sql-type="char(32)" not-null="true"/>
          </property>
         <property name="image">
-            <column name="image" sql-type="binary" not-null="true"/>
+            <column name="image" sql-type="bytea" not-null="true"/>
         </property>
         
         <property name="imageType">

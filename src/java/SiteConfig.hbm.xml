@@ -8,7 +8,9 @@
     <class name="com.ezjcc.picops.SiteConfig" table="siteconfig">
 
     <id name="id" unsaved-value="null" >
-            <column name="id" sql-type="numeric" not-null="true"/>
+            <!-- varchar to match the String id property; modern pgjdbc won't
+                 coerce a string parameter against a numeric column -->
+            <column name="id" sql-type="varchar(32)" not-null="true"/>
             
         </id>
           
