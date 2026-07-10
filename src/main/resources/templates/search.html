@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Search — PicOps</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<header class="appbar">
+    <a class="brand" th:href="@{/}">
+        <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true">
+            <rect x="1" y="3" width="20" height="16" rx="3" fill="var(--accent)"/>
+            <circle cx="4.5" cy="6.5" r="1.1" fill="var(--bg)"/><circle cx="4.5" cy="11" r="1.1" fill="var(--bg)"/><circle cx="4.5" cy="15.5" r="1.1" fill="var(--bg)"/>
+            <circle cx="17.5" cy="6.5" r="1.1" fill="var(--bg)"/><circle cx="17.5" cy="11" r="1.1" fill="var(--bg)"/><circle cx="17.5" cy="15.5" r="1.1" fill="var(--bg)"/>
+            <circle cx="11" cy="11" r="3.4" fill="none" stroke="var(--bg)" stroke-width="1.6"/>
+        </svg>
+        PicOps
+    </a>
+    <form class="searchbox" th:action="@{/search}" method="get">
+        <input type="search" name="q" th:value="${q}" placeholder="Search albums and photos…" autofocus>
+    </form>
+    <div class="appbar-right">
+        <form th:action="@{/logout}" method="post" style="margin:0">
+            <button class="btn ghost" type="submit">Sign out</button>
+        </form>
+        <div class="avatar" th:text="${initials}">TU</div>
+    </div>
+</header>
+
+<main class="appmain">
+    <div class="pagehead">
+        <div>
+            <h1>Search</h1>
+            <div class="sub" th:if="${!q.isEmpty()}">
+                Results for “<span th:text="${q}"></span>” —
+                <span th:text="${#lists.size(albumHits)}">0</span> albums,
+                <span th:text="${#lists.size(photoHits)}">0</span> photos
+            </div>
+        </div>
+    </div>
+
+    <h2 style="font-size:16px" th:if="${!albumHits.isEmpty()}">Albums</h2>
+    <ul th:if="${!albumHits.isEmpty()}" style="list-style:none;padding:0;display:grid;gap:8px">
+        <li th:each="a : ${albumHits}">
+            <a th:href="@{/albums/{id}(id=${a.id})}" th:text="${a.title}">Album</a>
+            <span class="chip" style="position:static;margin-left:8px"
+                  th:classappend="${a.visibility == 'PUBLIC'} ? 'public' : 'private'"
+                  th:text="${a.visibility == 'PUBLIC'} ? 'Public' : 'Private'"></span>
+        </li>
+    </ul>
+
+    <h2 style="font-size:16px" th:if="${!photoHits.isEmpty()}">Photos</h2>
+    <div class="photogrid" th:if="${!photoHits.isEmpty()}">
+        <a class="photo" th:each="p : ${photoHits}" th:href="@{/pictures/{id}/view(id=${p.id})}"
+           th:title="${p.label}">
+            <img th:src="@{/pictures/{id}/thumb(id=${p.id})}" th:alt="${p.label}" loading="lazy">
+        </a>
+    </div>
+
+    <div class="empty" th:if="${!q.isEmpty() and albumHits.isEmpty() and photoHits.isEmpty()}">
+        <b>Nothing found</b> Try a different term.
+    </div>
+</main>
+</body>
+</html>

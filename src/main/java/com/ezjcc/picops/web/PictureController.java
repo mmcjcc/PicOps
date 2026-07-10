@@ -1,6 +1,7 @@
 package com.ezjcc.picops.web;
 
 import com.ezjcc.picops.album.Album;
+import com.ezjcc.picops.comment.CommentService;
 import com.ezjcc.picops.picture.PictureService;
 import com.ezjcc.picops.user.User;
 import java.security.Principal;
@@ -23,10 +24,13 @@ import org.springframework.web.util.UriUtils;
 public class PictureController {
 
     private final PictureService pictures;
+    private final CommentService comments;
     private final CurrentUser currentUser;
 
-    public PictureController(PictureService pictures, CurrentUser currentUser) {
+    public PictureController(PictureService pictures, CommentService comments,
+                             CurrentUser currentUser) {
         this.pictures = pictures;
+        this.comments = comments;
         this.currentUser = currentUser;
     }
 
@@ -77,6 +81,7 @@ public class PictureController {
         }
         model.addAttribute("prevId", neighbors[0]);
         model.addAttribute("nextId", neighbors[1]);
+        model.addAttribute("comments", comments.listForPicture(id, viewer));
         return "picture-view";
     }
 

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Your albums — PicOps</title>
+    <title th:text="'Albums by ' + ${username} + ' — PicOps'">Public albums — PicOps</title>
     <link rel="stylesheet" th:href="@{/css/app.css}">
 </head>
 <body>
@@ -17,26 +17,22 @@
         </svg>
         PicOps
     </a>
-    <form class="searchbox" th:action="@{/search}" method="get">
-        <input type="search" name="q" placeholder="Search albums and photos…" th:value="${param.q}">
-    </form>
-    <div class="appbar-right">
-        <a class="btn" th:href="@{/albums/new}">＋ New album</a>
+    <div class="appbar-right" th:if="${authenticated}">
         <form th:action="@{/logout}" method="post" style="margin:0">
             <button class="btn ghost" type="submit">Sign out</button>
         </form>
         <div class="avatar" th:text="${initials}">TU</div>
+    </div>
+    <div class="appbar-right" th:if="${!authenticated}">
+        <a class="btn ghost" th:href="@{/login}">Sign in</a>
     </div>
 </header>
 
 <main class="appmain">
     <div class="pagehead">
         <div>
-            <h1>Your albums</h1>
-            <div class="sub">
-                <span th:text="${#lists.size(cards)}">0</span> albums ·
-                welcome back, <span th:text="${displayName}">Test User</span>
-            </div>
+            <h1 th:text="'Public albums by ' + ${username}">Public albums</h1>
+            <div class="sub"><span th:text="${#lists.size(cards)}">0</span> shared albums</div>
         </div>
     </div>
 
@@ -46,26 +42,16 @@
                 <img th:if="${c.coverId != null}" th:src="@{/pictures/{id}/thumb(id=${c.coverId})}"
                      th:alt="${c.title}" loading="lazy">
                 <div th:if="${c.coverId == null}" class="cover-blank"></div>
-                <span class="chip" th:classappend="${c.visibility == 'PUBLIC'} ? 'public' : 'private'"
-                      th:text="${c.visibility == 'PUBLIC'} ? 'Public' : 'Private'">Private</span>
             </div>
             <div class="body">
                 <div class="title" th:text="${c.title}">Album</div>
-                <div class="meta">
-                    <span th:text="${c.pictureCount}">0</span> photos ·
-                    updated <span th:text="${c.updated}">today</span>
-                </div>
+                <div class="meta">updated <span th:text="${c.updated}">today</span></div>
             </div>
-        </a>
-        <a class="newalbum" th:href="@{/albums/new}">
-            <div><div class="plus">＋</div>New album</div>
         </a>
     </div>
 
     <div class="empty" th:if="${cards.isEmpty()}">
-        <b>No albums yet</b>
-        Create your first album and start uploading photos.
-        <div style="margin-top:16px"><a class="btn" th:href="@{/albums/new}">＋ New album</a></div>
+        <b>No public albums</b> This user hasn't shared anything yet.
     </div>
 </main>
 </body>

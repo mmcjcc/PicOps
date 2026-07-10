@@ -51,6 +51,30 @@
     <div class="photostage">
         <img th:src="@{/pictures/{id}(id=${picId})}" alt="photo">
     </div>
+
+    <section class="comments">
+        <h2>Comments <span th:if="${!comments.isEmpty()}" th:text="'(' + ${#lists.size(comments)} + ')'"></span></h2>
+        <div class="comment" th:each="c : ${comments}">
+            <div class="who">
+                <b th:text="${c.author}">Someone</b> · <span th:text="${c.when}">now</span>
+                <form th:if="${c.canDelete}" th:action="@{/comments/{id}/delete(id=${c.id})}"
+                      method="post" style="display:inline;margin:0">
+                    <button type="submit" class="linkbtn">delete</button>
+                </form>
+            </div>
+            <p th:text="${c.body}">…</p>
+        </div>
+        <p class="photometa" th:if="${comments.isEmpty()}">No comments yet.</p>
+
+        <form th:if="${authenticated}" class="commentform"
+              th:action="@{/pictures/{id}/comments(id=${picId})}" method="post">
+            <input type="text" name="body" maxlength="1000" placeholder="Add a comment…" required>
+            <button class="btn" type="submit">Post</button>
+        </form>
+        <p class="photometa" th:if="${!authenticated}">
+            <a th:href="@{/login}">Sign in</a> to comment.
+        </p>
+    </section>
 </main>
 </body>
 </html>

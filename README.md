@@ -27,8 +27,8 @@ Flyway migrations · PostgreSQL 16 · GitHub Actions (build + CodeQL)
 ## Status
 
 - [x] Slice 1 — scaffold, schema baseline, login/logout, seeded dev account, CI
-- [ ] Slice 2 — albums CRUD + visibility
-- [ ] Slice 3 — upload, thumbnails, image serving
-- [ ] Slice 4 — comments, search, slideshow
-- [ ] Slice 5 — signup + mail (Mailpit), OAuth (Google)
+- [x] Slice 2 — albums CRUD + visibility (private albums 404 for non-owners)
+- [x] Slice 3 — upload (byte-sniff validation, quota), thumbnails, authorized image serving
+- [x] Slice 4 — comments, search, public profile page (/u/username), prev/next photo nav
+- [ ] Slice 5 — signup + mail (Mailpit), OAuth (Google), htmx polish (inline comments, drag-drop upload)
 - [ ] Slice 6 — Azure deployment

@@ -35,4 +35,10 @@ public interface PictureRepository extends JpaRepository<Picture, UUID> {
 
     @Query("select coalesce(sum(p.sizeBytes), 0) from Picture p where p.album.owner.id = :ownerId")
     long storageUsed(@Param("ownerId") UUID ownerId);
+
+    @Query("select p.id as id, p.fileName as fileName, p.title as title, "
+         + "p.sizeBytes as sizeBytes, p.createdAt as createdAt from Picture p "
+         + "where p.album.owner.id = :uid and (lower(p.fileName) like lower(concat('%', :q, '%')) "
+         + "or lower(p.title) like lower(concat('%', :q, '%'))) order by p.createdAt desc")
+    List<Info> searchOwn(@Param("uid") UUID userId, @Param("q") String q);
 }
