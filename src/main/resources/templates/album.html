@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${album.title} + ' — PicOps'">Album — PicOps</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<header class="appbar">
+    <a class="brand" th:href="@{/}">
+        <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true">
+            <rect x="1" y="3" width="20" height="16" rx="3" fill="var(--accent)"/>
+            <circle cx="4.5" cy="6.5" r="1.1" fill="var(--bg)"/><circle cx="4.5" cy="11" r="1.1" fill="var(--bg)"/><circle cx="4.5" cy="15.5" r="1.1" fill="var(--bg)"/>
+            <circle cx="17.5" cy="6.5" r="1.1" fill="var(--bg)"/><circle cx="17.5" cy="11" r="1.1" fill="var(--bg)"/><circle cx="17.5" cy="15.5" r="1.1" fill="var(--bg)"/>
+            <circle cx="11" cy="11" r="3.4" fill="none" stroke="var(--bg)" stroke-width="1.6"/>
+        </svg>
+        PicOps
+    </a>
+    <div class="appbar-right" th:if="${authenticated}">
+        <form th:action="@{/logout}" method="post" style="margin:0">
+            <button class="btn ghost" type="submit">Sign out</button>
+        </form>
+        <div class="avatar" th:text="${initials}">TU</div>
+    </div>
+    <div class="appbar-right" th:if="${!authenticated}">
+        <a class="btn ghost" th:href="@{/login}">Sign in</a>
+    </div>
+</header>
+
+<main class="appmain">
+    <div class="toolbar">
+        <a class="back" th:href="@{/}" th:if="${isOwner}">← Albums</a>
+        <h1 th:text="${album.title}">Album</h1>
+        <span class="chip" style="position:static"
+              th:classappend="${album.public} ? 'public' : 'private'"
+              th:text="${album.public} ? 'Public' : 'Private'">Private</span>
+        <div class="spacer"></div>
+        <th:block th:if="${isOwner}">
+            <a class="btn ghost" th:href="@{/albums/{id}/edit(id=${album.id})}">Edit</a>
+            <form th:action="@{/albums/{id}/delete(id=${album.id})}" method="post" style="margin:0"
+                  onsubmit="return confirm('Delete this album and all its photos?')">
+                <button class="btn ghost" type="submit">Delete</button>
+            </form>
+        </th:block>
+    </div>
+    <p class="subline">
+        <span th:if="${album.description}" th:text="${album.description}"></span>
+        <span th:if="${album.public and isOwner}"> · shareable — anyone with this page's link can view</span>
+    </p>
+
+    <form th:if="${isOwner}" class="uploadbar" th:action="@{/albums/{id}/pictures(id=${album.id})}"
+          method="post" enctype="multipart/form-data">
+        <input type="file" name="files" accept="image/*" multiple required>
+        <button class="btn" type="submit">Upload</button>
+    </form>
+    <p class="alert error" th:if="${param.uploaderror}"
+       th:text="'Some files could not be uploaded: ' + ${param.uploaderror[0]}"></p>
+
+    <div class="photogrid" th:if="${!pictures.isEmpty()}">
+        <a class="photo" th:each="p : ${pictures}" th:href="@{/pictures/{id}/view(id=${p.id})}">
+            <img th:src="@{/pictures/{id}/thumb(id=${p.id})}" th:alt="${p.fileName}" loading="lazy">
+        </a>
+    </div>
+
+    <div class="empty" th:if="${pictures.isEmpty()}">
+        <b>No photos yet</b>
+        <span th:if="${isOwner}">Use the upload box above to add the first ones.</span>
+        <span th:if="${!isOwner}">Nothing here so far.</span>
+    </div>
+</main>
+</body>
+</html>

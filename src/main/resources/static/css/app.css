@@ -156,3 +156,88 @@ a { color: var(--accent); }
   color: var(--muted);
 }
 .empty b { color: var(--ink); font-weight: 600; display: block; margin-bottom: 4px; font-size: 15.5px; }
+
+/* ---- album grid ---- */
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(215px, 1fr)); gap: 16px; }
+.card {
+  display: block;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+  text-decoration: none;
+  color: var(--ink);
+  transition: box-shadow .15s ease, transform .15s ease;
+}
+.card:hover { box-shadow: var(--shadow); transform: translateY(-2px); }
+@media (prefers-reduced-motion: reduce) {
+  .card, .card:hover { transition: none; transform: none; }
+}
+.cover { aspect-ratio: 4 / 3; position: relative; background: var(--surface-2); }
+.cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.cover-blank {
+  width: 100%; height: 100%;
+  background: linear-gradient(140deg, var(--accent-soft), var(--surface-2));
+}
+.chip {
+  position: absolute; top: 8px; left: 8px;
+  font-size: 11px; font-weight: 600; letter-spacing: .04em;
+  padding: 2px 9px; border-radius: 99px;
+}
+.chip.public { background: var(--good-soft); color: var(--good); }
+.chip.private { background: var(--surface-2); color: var(--muted); border: 1px solid var(--line); }
+.card .body { padding: 11px 13px 13px; }
+.card .title { font-weight: 600; font-size: 14.5px; }
+.card .meta { color: var(--muted); font-size: 12.5px; margin-top: 2px; font-variant-numeric: tabular-nums; }
+.newalbum {
+  border: 1.5px dashed var(--line);
+  border-radius: var(--radius);
+  display: grid; place-items: center;
+  color: var(--muted); font-size: 13.5px; text-align: center;
+  min-height: 200px; text-decoration: none;
+}
+.newalbum:hover { border-color: var(--accent); color: var(--accent); }
+.newalbum .plus { font-size: 26px; line-height: 1; color: var(--accent); }
+
+/* ---- album detail ---- */
+.toolbar { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; flex-wrap: wrap; }
+.toolbar h1 { font-size: 20px; font-weight: 650; margin: 0; }
+.back { color: var(--muted); font-size: 13.5px; text-decoration: none; }
+.spacer { flex: 1; }
+.subline { color: var(--muted); font-size: 13px; margin: 0 0 16px; }
+.uploadbar {
+  display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 12px 14px; margin-bottom: 16px;
+}
+.uploadbar input[type="file"] { color: var(--muted); font-size: 13.5px; }
+.select {
+  width: 100%; background: var(--surface-2); border: 1px solid var(--line);
+  border-radius: 8px; padding: 9px 12px; font: inherit; color: var(--ink);
+}
+.photogrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.photo { aspect-ratio: 1; border-radius: 7px; overflow: hidden; display: block; background: var(--surface-2); }
+.photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* ---- photo view ---- */
+.photostage {
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 14px; text-align: center;
+}
+.photostage img { max-width: 100%; max-height: 74vh; border-radius: 6px; }
+.photonav { display: flex; justify-content: space-between; margin: 12px 0 18px; }
+.photometa { color: var(--muted); font-size: 13px; }
+.comments { max-width: 640px; margin-top: 26px; }
+.comments h2 { font-size: 16px; font-weight: 650; margin: 0 0 12px; }
+.comment {
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 10px 14px; margin-bottom: 10px;
+}
+.comment .who { font-size: 12.5px; color: var(--muted); margin-bottom: 3px; }
+.comment .who b { color: var(--ink); font-weight: 600; }
+.comment p { margin: 0; font-size: 14px; }
+.commentform { display: flex; gap: 10px; margin-top: 14px; }
+.commentform input[type="text"] {
+  flex: 1; background: var(--surface-2); border: 1px solid var(--line);
+  border-radius: 8px; padding: 9px 12px; font: inherit; color: var(--ink);
+}

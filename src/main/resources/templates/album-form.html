@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${mode == 'edit'} ? 'Edit album — PicOps' : 'New album — PicOps'">New album — PicOps</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<div class="login-wrap">
+    <div class="login-card" style="max-width:440px">
+        <div class="login-brand" th:text="${mode == 'edit'} ? 'Edit album' : 'New album'">New album</div>
+        <p class="login-sub" th:text="${mode == 'edit'} ? 'Update the details below.' : 'Give it a name; photos come next.'"></p>
+
+        <form th:action="${mode == 'edit'} ? @{/albums/{id}(id=${album.id})} : @{/albums}" method="post">
+            <div class="field">
+                <label for="title">Title</label>
+                <input id="title" name="title" type="text" maxlength="200" required
+                       th:value="${mode == 'edit'} ? ${album.title} : ''">
+            </div>
+            <div class="field">
+                <label for="description">Description <span style="font-weight:400">(optional)</span></label>
+                <input id="description" name="description" type="text" maxlength="500"
+                       th:value="${mode == 'edit'} ? ${album.description} : ''">
+            </div>
+            <div class="field">
+                <label for="visibility">Visibility</label>
+                <select id="visibility" name="visibility" class="select">
+                    <option value="PRIVATE" th:selected="${mode == 'edit'} ? ${album.visibility.name() == 'PRIVATE'} : true">Private — only you</option>
+                    <option value="PUBLIC" th:selected="${mode == 'edit'} ? ${album.visibility.name() == 'PUBLIC'} : false">Public — anyone with the link</option>
+                </select>
+            </div>
+            <button class="btn" type="submit" th:text="${mode == 'edit'} ? 'Save changes' : 'Create album'">Create album</button>
+        </form>
+        <p class="login-foot"><a th:href="${mode == 'edit'} ? @{/albums/{id}(id=${album.id})} : @{/}">Cancel</a></p>
+    </div>
+</div>
+</body>
+</html>

@@ -2,6 +2,7 @@ package com.ezjcc.picops.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -17,6 +18,9 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/login", "/css/**", "/error").permitAll()
+                // public-album views; controllers enforce per-album visibility,
+                // continuing the 2005 thesis: access is mediated by the app, not the URL
+                .requestMatchers(HttpMethod.GET, "/albums/*", "/pictures/**", "/u/**").permitAll()
                 .anyRequest().authenticated())
             .formLogin(form -> form
                 .loginPage("/login")

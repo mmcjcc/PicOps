@@ -8,7 +8,7 @@
 </head>
 <body>
 <header class="appbar">
-    <div class="brand">
+    <a class="brand" th:href="@{/}">
         <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true">
             <rect x="1" y="3" width="20" height="16" rx="3" fill="var(--accent)"/>
             <circle cx="4.5" cy="6.5" r="1.1" fill="var(--bg)"/><circle cx="4.5" cy="11" r="1.1" fill="var(--bg)"/><circle cx="4.5" cy="15.5" r="1.1" fill="var(--bg)"/>
@@ -16,8 +16,9 @@
             <circle cx="11" cy="11" r="3.4" fill="none" stroke="var(--bg)" stroke-width="1.6"/>
         </svg>
         PicOps
-    </div>
+    </a>
     <div class="appbar-right">
+        <a class="btn" th:href="@{/albums/new}">＋ New album</a>
         <form th:action="@{/logout}" method="post" style="margin:0">
             <button class="btn ghost" type="submit">Sign out</button>
         </form>
@@ -29,14 +30,39 @@
     <div class="pagehead">
         <div>
             <h1>Your albums</h1>
-            <div class="sub">Welcome back, <span th:text="${displayName}">Test User</span></div>
+            <div class="sub">
+                <span th:text="${#lists.size(cards)}">0</span> albums ·
+                welcome back, <span th:text="${displayName}">Test User</span>
+            </div>
         </div>
     </div>
 
-    <div class="empty">
+    <div class="grid" th:if="${!cards.isEmpty()}">
+        <a class="card" th:each="c : ${cards}" th:href="@{/albums/{id}(id=${c.id})}">
+            <div class="cover">
+                <img th:if="${c.coverId != null}" th:src="@{/pictures/{id}/thumb(id=${c.coverId})}"
+                     th:alt="${c.title}" loading="lazy">
+                <div th:if="${c.coverId == null}" class="cover-blank"></div>
+                <span class="chip" th:classappend="${c.visibility == 'PUBLIC'} ? 'public' : 'private'"
+                      th:text="${c.visibility == 'PUBLIC'} ? 'Public' : 'Private'">Private</span>
+            </div>
+            <div class="body">
+                <div class="title" th:text="${c.title}">Album</div>
+                <div class="meta">
+                    <span th:text="${c.pictureCount}">0</span> photos ·
+                    updated <span th:text="${c.updated}">today</span>
+                </div>
+            </div>
+        </a>
+        <a class="newalbum" th:href="@{/albums/new}">
+            <div><div class="plus">＋</div>New album</div>
+        </a>
+    </div>
+
+    <div class="empty" th:if="${cards.isEmpty()}">
         <b>No albums yet</b>
-        Albums, uploads, and the photo grid arrive in the next slices —
-        this screen becomes the grid from the design proposal.
+        Create your first album and start uploading photos.
+        <div style="margin-top:16px"><a class="btn" th:href="@{/albums/new}">＋ New album</a></div>
     </div>
 </main>
 </body>
