@@ -21,6 +21,7 @@
         <input type="search" name="q" placeholder="Search albums and photos…" th:value="${param.q}">
     </form>
     <div class="appbar-right">
+        <a class="btn ghost" th:href="@{/people}">People</a>
         <a class="btn" th:href="@{/albums/new}">＋ New album</a>
         <form th:action="@{/logout}" method="post" style="margin:0">
             <button class="btn ghost" type="submit">Sign out</button>

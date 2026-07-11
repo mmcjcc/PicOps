@@ -21,11 +21,14 @@ public class MlWorker {
     private static final Logger log = LoggerFactory.getLogger(MlWorker.class);
 
     private final MlRepository repo;
+    private final FaceRepository faceRepo;
     private final MlClient client;
     private final ThumbnailRepository thumbnails;
 
-    public MlWorker(MlRepository repo, MlClient client, ThumbnailRepository thumbnails) {
+    public MlWorker(MlRepository repo, FaceRepository faceRepo, MlClient client,
+                    ThumbnailRepository thumbnails) {
         this.repo = repo;
+        this.faceRepo = faceRepo;
         this.client = client;
         this.thumbnails = thumbnails;
     }
@@ -54,6 +57,36 @@ public class MlWorker {
         }
         if (done > 0) {
             log.info("Analyzed {} picture(s)", done);
+        }
+    }
+
+    @Scheduled(fixedDelayString = "${picops.ml.interval-ms:15000}", initialDelay = 20000)
+    public void faceTick() {
+        List<UUID> batch = faceRepo.pendingFaceScan(4);
+        int faces = 0;
+        for (UUID id : batch) {
+            byte[] thumb = thumbnails.findData(id).orElse(null);
+            if (thumb == null) {
+                continue;
+            }
+            try {
+                MlClient.Faces result = client.faces(thumb);
+                UUID owner = faceRepo.ownerOfPicture(id);
+                for (MlClient.FaceDet f : result.faces()) {
+                    int[] bbox = {f.bbox().get(0), f.bbox().get(1),
+                                  f.bbox().get(2), f.bbox().get(3)};
+                    faceRepo.storeFace(id, owner, bbox, f.score(),
+                        MlClient.toVectorLiteral(f.embedding()));
+                    faces++;
+                }
+                faceRepo.markScanned(id);
+            } catch (Exception e) {
+                log.info("Face scan unavailable or failed ({}); will retry", e.getMessage());
+                return;
+            }
+        }
+        if (faces > 0) {
+            log.info("Detected {} face(s) in {} picture(s)", faces, batch.size());
         }
     }
 }

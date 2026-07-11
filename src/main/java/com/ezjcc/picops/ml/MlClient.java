@@ -13,6 +13,8 @@ public class MlClient {
     public record Tag(String tag, double score) {}
     public record Analysis(List<Double> embedding, List<Tag> tags) {}
     public record TextEmbedding(List<Double> embedding) {}
+    public record FaceDet(List<Integer> bbox, double score, List<Double> embedding) {}
+    public record Faces(List<FaceDet> faces) {}
 
     private final RestClient rest;
 
@@ -26,6 +28,14 @@ public class MlClient {
             .body(imageBytes)
             .retrieve()
             .body(Analysis.class);
+    }
+
+    public Faces faces(byte[] imageBytes) {
+        return rest.post().uri("/faces")
+            .contentType(MediaType.APPLICATION_OCTET_STREAM)
+            .body(imageBytes)
+            .retrieve()
+            .body(Faces.class);
     }
 
     public List<Double> embedText(String text) {

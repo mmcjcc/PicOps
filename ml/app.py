@@ -9,9 +9,11 @@ Everything runs locally on CPU; photos never leave the compose network.
 import io
 import os
 
+import numpy as np
 import open_clip
 import torch
 from fastapi import FastAPI, Request
+from insightface.app import FaceAnalysis
 from PIL import Image
 
 MODEL = "ViT-B-32"
@@ -22,6 +24,13 @@ model, _, preprocess = open_clip.create_model_and_transforms(
     MODEL, pretrained=PRETRAINED, cache_dir=os.environ.get("HF_HOME"))
 tokenizer = open_clip.get_tokenizer(MODEL)
 model.eval()
+
+# Face detection + 512-d ArcFace embeddings (same stack Immich uses).
+face_app = FaceAnalysis(name="buffalo_l",
+                        root=os.environ.get("HF_HOME", "/models"),
+                        providers=["CPUExecutionProvider"])
+face_app.prepare(ctx_id=0, det_size=(640, 640))
+FACE_MIN_SCORE = 0.55
 
 # Zero-shot tag vocabulary: broad, personal-photo-oriented.
 LABELS = [
@@ -66,6 +75,22 @@ async def embed_text(payload: dict):
     return {"embedding": emb.squeeze(0).tolist()}
 
 
+@app.post("/faces")
+async def faces(request: Request):
+    data = await request.body()
+    img = Image.open(io.BytesIO(data)).convert("RGB")
+    arr = np.asarray(img)[:, :, ::-1]  # RGB -> BGR for insightface
+    found = face_app.get(arr)
+    return {"faces": [
+        {
+            "bbox": [max(0, int(v)) for v in f.bbox],
+            "score": round(float(f.det_score), 4),
+            "embedding": f.normed_embedding.tolist(),
+        }
+        for f in found if float(f.det_score) >= FACE_MIN_SCORE
+    ]}
+
+
 @app.get("/health")
 def health():
-    return {"ok": True, "model": f"{MODEL}/{PRETRAINED}"}
+    return {"ok": True, "model": f"{MODEL}/{PRETRAINED}", "faces": "buffalo_l"}

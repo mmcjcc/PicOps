@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="(${personName.isEmpty()} ? 'Unnamed person' : ${personName}) + ' — PicOps'">Person — PicOps</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<header class="appbar">
+    <a class="brand" th:href="@{/}">
+        <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true">
+            <rect x="1" y="3" width="20" height="16" rx="3" fill="var(--accent)"/>
+            <circle cx="4.5" cy="6.5" r="1.1" fill="var(--bg)"/><circle cx="4.5" cy="11" r="1.1" fill="var(--bg)"/><circle cx="4.5" cy="15.5" r="1.1" fill="var(--bg)"/>
+            <circle cx="17.5" cy="6.5" r="1.1" fill="var(--bg)"/><circle cx="17.5" cy="11" r="1.1" fill="var(--bg)"/><circle cx="17.5" cy="15.5" r="1.1" fill="var(--bg)"/>
+            <circle cx="11" cy="11" r="3.4" fill="none" stroke="var(--bg)" stroke-width="1.6"/>
+        </svg>
+        PicOps
+    </a>
+    <div class="appbar-right">
+        <form th:action="@{/logout}" method="post" style="margin:0">
+            <button class="btn ghost" type="submit">Sign out</button>
+        </form>
+        <div class="avatar" th:text="${initials}">TU</div>
+    </div>
+</header>
+
+<main class="appmain">
+    <div class="toolbar">
+        <a class="back" th:href="@{/people}">← People</a>
+        <h1 th:text="${personName.isEmpty()} ? 'Unnamed person' : ${personName}">Person</h1>
+        <div class="spacer"></div>
+    </div>
+
+    <form class="commentform" style="max-width:360px;margin:0 0 18px"
+          th:action="@{/people/{id}/name(id=${personId})}" method="post">
+        <input type="text" name="name" maxlength="60" th:value="${personName}"
+               placeholder="Name this person…">
+        <button class="btn" type="submit">Save</button>
+    </form>
+
+    <div class="photogrid" th:if="${!pictures.isEmpty()}">
+        <a class="photo" th:each="id : ${pictures}" th:href="@{/pictures/{id}/view(id=${id})}">
+            <img th:src="@{/pictures/{id}/thumb(id=${id})}" alt="photo" loading="lazy">
+        </a>
+    </div>
+    <div class="empty" th:if="${pictures.isEmpty()}">
+        <b>No photos</b> This person has no remaining photos.
+    </div>
+</main>
+</body>
+</html>

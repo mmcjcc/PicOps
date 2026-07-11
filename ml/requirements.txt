@@ -2,3 +2,6 @@ open_clip_torch==2.24.0
 fastapi==0.115.0
 uvicorn==0.30.6
 pillow==10.4.0
+insightface==0.7.3
+onnxruntime==1.19.2
+opencv-python-headless==4.10.0.84

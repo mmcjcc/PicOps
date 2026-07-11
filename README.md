@@ -118,6 +118,6 @@ Flyway migrations · PostgreSQL 16 · GitHub Actions (build + CodeQL)
 - [x] Slice 6 — drag-and-drop bulk upload with per-file status
 - [x] Slice 7 — EXIF metadata extraction, orientation fix, owner-only originals (GPS privacy)
 - [x] Slice 8 — ML sidecar: CLIP semantic search, zero-shot tags, find-similar (pgvector)
-- [ ] Slice 8b — faces (InsightFace), people galleries, auto-galleries
+- [x] Slice 8b — faces (InsightFace), per-owner people clustering, People galleries + naming
 - [ ] Slice 9 — Google OAuth (needs client credentials), timeline view, bulk download
 - [ ] Slice 10 — storage backend (MinIO/S3) + deployment (home microserver + Azure demo)

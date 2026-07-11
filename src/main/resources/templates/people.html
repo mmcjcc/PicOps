@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>People — PicOps</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<header class="appbar">
+    <a class="brand" th:href="@{/}">
+        <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true">
+            <rect x="1" y="3" width="20" height="16" rx="3" fill="var(--accent)"/>
+            <circle cx="4.5" cy="6.5" r="1.1" fill="var(--bg)"/><circle cx="4.5" cy="11" r="1.1" fill="var(--bg)"/><circle cx="4.5" cy="15.5" r="1.1" fill="var(--bg)"/>
+            <circle cx="17.5" cy="6.5" r="1.1" fill="var(--bg)"/><circle cx="17.5" cy="11" r="1.1" fill="var(--bg)"/><circle cx="17.5" cy="15.5" r="1.1" fill="var(--bg)"/>
+            <circle cx="11" cy="11" r="3.4" fill="none" stroke="var(--bg)" stroke-width="1.6"/>
+        </svg>
+        PicOps
+    </a>
+    <div class="appbar-right">
+        <form th:action="@{/logout}" method="post" style="margin:0">
+            <button class="btn ghost" type="submit">Sign out</button>
+        </form>
+        <div class="avatar" th:text="${initials}">TU</div>
+    </div>
+</header>
+
+<main class="appmain">
+    <div class="pagehead">
+        <div>
+            <h1>People</h1>
+            <div class="sub">Faces found in your photos, grouped automatically. Only you can see this page.</div>
+        </div>
+    </div>
+
+    <div class="peoplegrid" th:if="${!people.isEmpty()}">
+        <a class="personcard" th:each="p : ${people}" th:href="@{/people/{id}(id=${p.id})}">
+            <img class="facecircle" th:src="@{/faces/{id}/crop(id=${p.sampleFaceId})}" alt="face">
+            <div class="pname" th:text="${p.name != null ? p.name : 'Unnamed'}">Name</div>
+            <div class="pcount"><span th:text="${p.faceCount}">0</span> photos</div>
+        </a>
+    </div>
+
+    <div class="empty" th:if="${people.isEmpty()}">
+        <b>No faces found yet</b>
+        Faces are detected in the background after upload — check back shortly,
+        or upload photos with people in them.
+    </div>
+</main>
+</body>
+</html>

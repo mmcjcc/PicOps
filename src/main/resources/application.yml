@@ -26,3 +26,4 @@ picops:
     url: ${ML_URL:http://localhost:8000}
     enabled: ${PICOPS_ML_ENABLED:true}
     interval-ms: 15000
+    face-match-distance: ${PICOPS_FACE_MATCH_DISTANCE:0.55}

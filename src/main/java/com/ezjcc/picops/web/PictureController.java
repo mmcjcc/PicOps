@@ -31,13 +31,16 @@ public class PictureController {
     private final CommentService comments;
     private final CurrentUser currentUser;
     private final com.ezjcc.picops.ml.MlRepository mlRepo;
+    private final com.ezjcc.picops.ml.FaceRepository faceRepo;
 
     public PictureController(PictureService pictures, CommentService comments,
-                             CurrentUser currentUser, com.ezjcc.picops.ml.MlRepository mlRepo) {
+                             CurrentUser currentUser, com.ezjcc.picops.ml.MlRepository mlRepo,
+                             com.ezjcc.picops.ml.FaceRepository faceRepo) {
         this.pictures = pictures;
         this.comments = comments;
         this.currentUser = currentUser;
         this.mlRepo = mlRepo;
+        this.faceRepo = faceRepo;
     }
 
     @PostMapping("/albums/{id}/pictures")
@@ -105,6 +108,8 @@ public class PictureController {
         if (album.isOwnedBy(viewer)) {
             // full EXIF can include GPS — owner's eyes only, like the original bytes
             model.addAttribute("metaMap", pictures.fullMetadata(id));
+            // face/person data is likewise owner-only
+            model.addAttribute("faces", faceRepo.facesForPicture(id));
         }
         try {
             model.addAttribute("tags", mlRepo.tagsFor(id));

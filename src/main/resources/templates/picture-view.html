@@ -63,6 +63,13 @@
         <a class="tagchip" th:each="t : ${tags}" th:href="@{/search(q=${t})}" th:text="${t}">tag</a>
     </p>
 
+    <p class="tagrow" th:if="${faces != null and !faces.isEmpty()}">
+        <a class="facechip" th:each="f : ${faces}" th:href="@{/people/{id}(id=${f.personId})}">
+            <img th:src="@{/faces/{id}/crop(id=${f.id})}" alt="face">
+            <span th:text="${f.personName != null ? f.personName : 'Unnamed'}">Name</span>
+        </a>
+    </p>
+
     <details class="metapanel" th:if="${metaMap != null and !metaMap.isEmpty()}">
         <summary th:text="'Full metadata (' + ${metaMap.size()} + ' fields, owner-only)'">Full metadata</summary>
         <div class="metatable-wrap">

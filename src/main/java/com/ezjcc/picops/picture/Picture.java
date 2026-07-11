@@ -71,6 +71,9 @@ public class Picture {
     @Column(name = "clean_data")
     private byte[] cleanData;
 
+    @Column(name = "faces_scanned", nullable = false)
+    private boolean facesScanned;
+
     protected Picture() {
     }
 
