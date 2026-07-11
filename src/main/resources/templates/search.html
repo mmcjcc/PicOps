@@ -58,7 +58,15 @@
         </a>
     </div>
 
-    <div class="empty" th:if="${!q.isEmpty() and albumHits.isEmpty() and photoHits.isEmpty()}">
+    <h2 style="font-size:16px" th:if="${!visualHits.isEmpty()}">Visual matches
+        <span style="font-weight:400;color:var(--muted);font-size:13px">— semantic search over image content</span></h2>
+    <div class="photogrid" th:if="${!visualHits.isEmpty()}">
+        <a class="photo" th:each="id : ${visualHits}" th:href="@{/pictures/{id}/view(id=${id})}">
+            <img th:src="@{/pictures/{id}/thumb(id=${id})}" alt="match" loading="lazy">
+        </a>
+    </div>
+
+    <div class="empty" th:if="${!q.isEmpty() and albumHits.isEmpty() and photoHits.isEmpty() and visualHits.isEmpty()}">
         <b>Nothing found</b> Try a different term.
     </div>
 </main>

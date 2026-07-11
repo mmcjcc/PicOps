@@ -1,6 +1,7 @@
 services:
   db:
-    image: postgres:16
+    # postgres:16 plus the pgvector extension for CLIP embeddings
+    image: pgvector/pgvector:pg16
     restart: unless-stopped
     environment:
       POSTGRES_DB: picops
@@ -22,6 +23,12 @@ services:
     ports:
       - "8025:8025"   # web UI for reading dev mail
 
+  ml:
+    build: ml
+    restart: unless-stopped
+    volumes:
+      - mlmodels:/models   # CLIP weights cache (~600MB, downloaded once)
+
   app:
     build: .
     restart: unless-stopped
@@ -33,6 +40,7 @@ services:
       DB_PASSWORD: picops
       MAIL_HOST: mail
       MAIL_PORT: 1025
+      ML_URL: http://ml:8000
       SPRING_PROFILES_ACTIVE: dev
     depends_on:
       db:
@@ -42,3 +50,4 @@ services:
 
 volumes:
   pgdata:
+  mlmodels:

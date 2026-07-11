@@ -22,3 +22,7 @@ picops:
   quota-mb: ${PICOPS_QUOTA_MB:10240}
   base-url: ${PICOPS_BASE_URL:http://localhost:8081}
   mail-from: ${PICOPS_MAIL_FROM:picops@example.com}
+  ml:
+    url: ${ML_URL:http://localhost:8000}
+    enabled: ${PICOPS_ML_ENABLED:true}
+    interval-ms: 15000

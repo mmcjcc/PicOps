@@ -59,6 +59,10 @@
         <span th:if="${metaLine}"> · </span>click the photo for full size
     </p>
 
+    <p class="tagrow" th:if="${tags != null and !tags.isEmpty()}">
+        <a class="tagchip" th:each="t : ${tags}" th:href="@{/search(q=${t})}" th:text="${t}">tag</a>
+    </p>
+
     <details class="metapanel" th:if="${metaMap != null and !metaMap.isEmpty()}">
         <summary th:text="'Full metadata (' + ${metaMap.size()} + ' fields, owner-only)'">Full metadata</summary>
         <div class="metatable-wrap">
@@ -70,6 +74,15 @@
             </table>
         </div>
     </details>
+
+    <section th:if="${similar != null and !similar.isEmpty()}" style="margin-top:22px">
+        <h2 style="font-size:16px;font-weight:650;margin:0 0 10px">More like this</h2>
+        <div class="photogrid" style="grid-template-columns:repeat(auto-fill,minmax(110px,1fr))">
+            <a class="photo" th:each="id : ${similar}" th:href="@{/pictures/{id}/view(id=${id})}">
+                <img th:src="@{/pictures/{id}/thumb(id=${id})}" alt="similar" loading="lazy">
+            </a>
+        </div>
+    </section>
 
     <section class="comments">
         <h2>Comments <span th:if="${!comments.isEmpty()}" th:text="'(' + ${#lists.size(comments)} + ')'"></span></h2>

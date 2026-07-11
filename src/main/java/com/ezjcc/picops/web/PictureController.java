@@ -30,12 +30,14 @@ public class PictureController {
     private final PictureService pictures;
     private final CommentService comments;
     private final CurrentUser currentUser;
+    private final com.ezjcc.picops.ml.MlRepository mlRepo;
 
     public PictureController(PictureService pictures, CommentService comments,
-                             CurrentUser currentUser) {
+                             CurrentUser currentUser, com.ezjcc.picops.ml.MlRepository mlRepo) {
         this.pictures = pictures;
         this.comments = comments;
         this.currentUser = currentUser;
+        this.mlRepo = mlRepo;
     }
 
     @PostMapping("/albums/{id}/pictures")
@@ -103,6 +105,15 @@ public class PictureController {
         if (album.isOwnedBy(viewer)) {
             // full EXIF can include GPS — owner's eyes only, like the original bytes
             model.addAttribute("metaMap", pictures.fullMetadata(id));
+        }
+        try {
+            model.addAttribute("tags", mlRepo.tagsFor(id));
+            model.addAttribute("similar", mlRepo.similar(id,
+                viewer != null ? viewer.getId() : null, 6).stream()
+                .map(Object::toString).toList());
+        } catch (Exception e) {
+            model.addAttribute("tags", List.of());
+            model.addAttribute("similar", List.of());
         }
         return "picture-view";
     }

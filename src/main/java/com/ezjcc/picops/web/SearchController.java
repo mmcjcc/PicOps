@@ -17,12 +17,18 @@ public class SearchController {
     private final AlbumRepository albums;
     private final PictureRepository pictures;
     private final CurrentUser currentUser;
+    private final com.ezjcc.picops.ml.MlClient mlClient;
+    private final com.ezjcc.picops.ml.MlRepository mlRepo;
 
     public SearchController(AlbumRepository albums, PictureRepository pictures,
-                            CurrentUser currentUser) {
+                            CurrentUser currentUser,
+                            com.ezjcc.picops.ml.MlClient mlClient,
+                            com.ezjcc.picops.ml.MlRepository mlRepo) {
         this.albums = albums;
         this.pictures = pictures;
         this.currentUser = currentUser;
+        this.mlClient = mlClient;
+        this.mlRepo = mlRepo;
     }
 
     public record AlbumHit(String id, String title, String visibility) {}
@@ -45,9 +51,21 @@ public class SearchController {
                     p.getTitle() != null ? p.getTitle() : p.getFileName()))
                 .toList();
         }
+        List<String> visualHits = List.of();
+        if (!query.isEmpty()) {
+            try {
+                String vec = com.ezjcc.picops.ml.MlClient.toVectorLiteral(
+                    mlClient.embedText(query));
+                visualHits = mlRepo.semanticSearch(user.getId(), vec, 12).stream()
+                    .map(Object::toString).toList();
+            } catch (Exception e) {
+                // sidecar down or not yet warmed up: text search still works
+            }
+        }
         model.addAttribute("q", query);
         model.addAttribute("albumHits", albumHits);
         model.addAttribute("photoHits", photoHits);
+        model.addAttribute("visualHits", visualHits);
         model.addAttribute("initials", CurrentUser.initials(user.getDisplayName()));
         return "search";
     }
