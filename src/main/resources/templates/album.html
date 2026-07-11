@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title th:text="${album.title} + ' — PicOps'">Album — PicOps</title>
+    <meta name="_csrf" th:content="${_csrf != null} ? ${_csrf.token} : ''">
     <link rel="stylesheet" th:href="@{/css/app.css}">
 </head>
 <body>
@@ -49,11 +50,18 @@
         <span th:if="${album.public and isOwner}"> · shareable — anyone with this page's link can view</span>
     </p>
 
-    <form th:if="${isOwner}" class="uploadbar" th:action="@{/albums/{id}/pictures(id=${album.id})}"
-          method="post" enctype="multipart/form-data">
-        <input type="file" name="files" accept="image/*" multiple required>
-        <button class="btn" type="submit">Upload</button>
-    </form>
+    <div th:if="${isOwner}" id="dropzone" class="dropzone-lg" th:attr="data-album=${album.id}">
+        <b>Drag photos here</b><span> or click to choose files</span>
+        <input id="filepick" type="file" accept="image/*" multiple hidden>
+        <ul id="uplist" class="uplist"></ul>
+    </div>
+    <noscript th:if="${isOwner}">
+        <form class="uploadbar" th:action="@{/albums/{id}/pictures(id=${album.id})}"
+              method="post" enctype="multipart/form-data">
+            <input type="file" name="files" accept="image/*" multiple required>
+            <button class="btn" type="submit">Upload</button>
+        </form>
+    </noscript>
     <p class="alert error" th:if="${param.uploaderror}"
        th:text="'Some files could not be uploaded: ' + ${param.uploaderror[0]}"></p>
 
@@ -69,5 +77,6 @@
         <span th:if="${!isOwner}">Nothing here so far.</span>
     </div>
 </main>
+<script th:if="${isOwner}" th:src="@{/js/upload.js}" defer></script>
 </body>
 </html>

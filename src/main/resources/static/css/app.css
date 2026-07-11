@@ -251,3 +251,18 @@ a { color: var(--accent); }
   width: 100%; background: var(--surface-2); border: 1px solid var(--line);
   border-radius: 8px; padding: 7px 12px; font: inherit; font-size: 13.5px; color: var(--ink);
 }
+.dropzone-lg {
+  border: 1.5px dashed var(--line); border-radius: var(--radius);
+  padding: 22px 16px; margin-bottom: 16px; text-align: center;
+  color: var(--muted); font-size: 14px; cursor: pointer;
+  transition: border-color .15s ease, background .15s ease;
+}
+.dropzone-lg b { color: var(--ink); font-weight: 600; }
+.dropzone-lg:hover, .dropzone-lg.drag {
+  border-color: var(--accent); background: var(--accent-soft); color: var(--accent);
+}
+.dropzone-lg.drag b, .dropzone-lg:hover b { color: var(--accent); }
+.uplist { list-style: none; margin: 0; padding: 0; font-size: 12.5px; text-align: left; }
+.uplist li { padding: 3px 0; }
+.uplist .up-ok { color: var(--good); }
+.uplist .up-bad { color: var(--danger); }
