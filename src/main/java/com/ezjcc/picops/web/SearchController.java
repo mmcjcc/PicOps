@@ -34,6 +34,17 @@ public class SearchController {
     public record AlbumHit(String id, String title, String visibility) {}
     public record PhotoHit(String id, String label) {}
 
+    /** Embedding of a generic caption; matches must beat this to count. */
+    private volatile String baselineVec;
+
+    private String baseline() {
+        if (baselineVec == null) {
+            baselineVec = com.ezjcc.picops.ml.MlClient.toVectorLiteral(
+                mlClient.embedText("a photo"));
+        }
+        return baselineVec;
+    }
+
     @GetMapping("/search")
     public String search(@RequestParam(defaultValue = "") String q,
                          Principal principal, Model model) {
@@ -54,10 +65,21 @@ public class SearchController {
         List<String> visualHits = List.of();
         if (!query.isEmpty()) {
             try {
+                // raw query, not caption-prompted: prefixing with "a photo of"
+                // drags nonsense queries into photo-space and defeats the
+                // contrast check; raw gibberish stays naturally far away
                 String vec = com.ezjcc.picops.ml.MlClient.toVectorLiteral(
                     mlClient.embedText(query));
-                visualHits = mlRepo.semanticSearch(user.getId(), vec, 12).stream()
-                    .map(Object::toString).toList();
+                var hits = mlRepo.semanticSearch(user.getId(), vec, baseline(), 12);
+                if (!hits.isEmpty()) {
+                    // relative cut: keep only results close to the best match,
+                    // so weak also-rans (a mountain on a "beach" query) drop out
+                    double best = hits.get(0).distance();
+                    visualHits = hits.stream()
+                        .filter(h -> h.distance() <= best + 0.035)
+                        .map(h -> h.id().toString())
+                        .toList();
+                }
             } catch (Exception e) {
                 // sidecar down or not yet warmed up: text search still works
             }

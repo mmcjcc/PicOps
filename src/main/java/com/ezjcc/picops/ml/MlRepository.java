@@ -13,20 +13,31 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 public class MlRepository {
 
-    /**
-     * Cross-modal CLIP similarities are small in absolute terms: relevant
-     * text->image matches typically land at cosine distance 0.85-0.90, so the
-     * cutoff only exists to drop far-off noise; ordering does the real work.
-     */
-    private static final double MAX_DISTANCE = 0.92;
-
     private static final UUID NIL = new UUID(0, 0);
 
     private final JdbcTemplate jdbc;
+    private final double searchMaxDistance;
+    private final double similarMaxDistance;
+    private final double contrastMargin;
 
-    public MlRepository(JdbcTemplate jdbc) {
+    /**
+     * Cross-modal CLIP similarities are small in absolute terms: relevant
+     * text->image matches land around cosine distance 0.85-0.88, irrelevant
+     * ones 0.89+. The absolute ceiling drops clear noise; the caller applies
+     * a relative margin against the best hit (see SearchController), which is
+     * what actually keeps mountains out of a "beach" search.
+     */
+    public MlRepository(JdbcTemplate jdbc,
+                        @org.springframework.beans.factory.annotation.Value("${picops.ml.search-max-distance:0.92}") double searchMaxDistance,
+                        @org.springframework.beans.factory.annotation.Value("${picops.ml.similar-max-distance:0.68}") double similarMaxDistance,
+                        @org.springframework.beans.factory.annotation.Value("${picops.ml.contrast-margin:0.11}") double contrastMargin) {
         this.jdbc = jdbc;
+        this.searchMaxDistance = searchMaxDistance;
+        this.similarMaxDistance = similarMaxDistance;
+        this.contrastMargin = contrastMargin;
     }
+
+    public record Hit(UUID id, double distance) {}
 
     /** Pictures that have a thumbnail but no embedding yet. */
     public List<UUID> pending(int limit) {
@@ -51,21 +62,34 @@ public class MlRepository {
         }
     }
 
-    /** Nearest pictures to a query vector, restricted to what the viewer may see. */
-    public List<UUID> semanticSearch(UUID viewerId, String vectorLiteral, int limit) {
-        return jdbc.queryForList("""
-            SELECT p.id FROM pictures p
+    /**
+     * Nearest pictures to a raw-text query vector, viewer-restricted.
+     * Contrast rule: every image is nearer to the generic "a photo" caption
+     * than to any specific query, so what separates a real match is HOW MUCH
+     * ground it loses — measured on this corpus with raw queries: true
+     * matches trail the baseline by ~0.10, irrelevant images by 0.12+.
+     * contrastMargin sits between. Raw (unprompted) queries also keep
+     * gibberish naturally far from all images.
+     */
+    public List<Hit> semanticSearch(UUID viewerId, String vectorLiteral,
+                                    String baselineLiteral, int limit) {
+        return jdbc.query("""
+            SELECT p.id, e.embedding <=> ?::vector AS dist FROM pictures p
             JOIN albums a ON a.id = p.album_id
             JOIN picture_embeddings e ON e.picture_id = p.id
             WHERE (a.owner_id = ? OR a.visibility = 'PUBLIC')
               AND e.embedding <=> ?::vector < ?
-            ORDER BY e.embedding <=> ?::vector
-            LIMIT ?""", UUID.class,
-            viewerId == null ? NIL : viewerId, vectorLiteral, MAX_DISTANCE,
-            vectorLiteral, limit);
+              AND (e.embedding <=> ?::vector) - (e.embedding <=> ?::vector) < ?
+            ORDER BY dist
+            LIMIT ?""",
+            (rs, i) -> new Hit(rs.getObject(1, UUID.class), rs.getDouble(2)),
+            vectorLiteral, viewerId == null ? NIL : viewerId,
+            vectorLiteral, searchMaxDistance,
+            vectorLiteral, baselineLiteral, contrastMargin, limit);
     }
 
-    /** Visually similar pictures, excluding the picture itself. */
+    /** Visually similar pictures, excluding the picture itself. Image-to-image
+     *  distances are much tighter than text-to-image, hence the separate cap. */
     public List<UUID> similar(UUID pictureId, UUID viewerId, int limit) {
         return jdbc.queryForList("""
             SELECT p.id FROM pictures p
@@ -73,9 +97,11 @@ public class MlRepository {
             JOIN picture_embeddings e ON e.picture_id = p.id
             WHERE p.id <> ?
               AND (a.owner_id = ? OR a.visibility = 'PUBLIC')
+              AND e.embedding <=> (SELECT embedding FROM picture_embeddings WHERE picture_id = ?) < ?
             ORDER BY e.embedding <=> (SELECT embedding FROM picture_embeddings WHERE picture_id = ?)
             LIMIT ?""", UUID.class,
-            pictureId, viewerId == null ? NIL : viewerId, pictureId, limit);
+            pictureId, viewerId == null ? NIL : viewerId, pictureId,
+            similarMaxDistance, pictureId, limit);
     }
 
     public List<String> tagsFor(UUID pictureId) {
