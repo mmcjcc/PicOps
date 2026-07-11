@@ -22,8 +22,6 @@ Open http://localhost:8081 and sign in as `testuser` / `picops123`
 
 ### System overview
 
-Solid boxes run today; dashed boxes are the planned ML sidecar stage.
-
 ```mermaid
 flowchart LR
     subgraph client [Browser]
@@ -32,21 +30,17 @@ flowchart LR
 
     subgraph compose [Docker compose stack]
         APP[PicOps app<br>Spring Boot 3 / Java 21<br>:8081]
-        DB[(PostgreSQL 16<br>metadata + images<br>+ pgvector*)]
+        DB[(PostgreSQL 16 + pgvector<br>metadata, images,<br>embeddings, faces)]
         MAIL[Mailpit<br>dev SMTP :1025<br>UI :8025]
-        ML[ML sidecar*<br>Python FastAPI<br>CLIP + InsightFace]
+        ML[ML sidecar<br>Python FastAPI<br>CLIP + InsightFace, CPU]
     end
 
     UI -->|HTTPS| APP
     APP --> DB
     APP -->|activation mail| MAIL
-    APP -.->|analysis jobs| ML
-    ML -.->|tags, embeddings| DB
-
-    style ML stroke-dasharray: 5 5
+    APP -->|thumbnails to analyze| ML
+    ML -->|embeddings, tags, faces| APP
 ```
-
-\* planned — see the roadmap below.
 
 All authorization is enforced in the app layer: images are stored in the
 database and only ever reach a browser through controllers that check album
@@ -86,21 +80,25 @@ flowchart TD
     OWN -- no --> CLEAN[Serve stripped variant<br>no EXIF, orientation applied]
 ```
 
-### Planned ML pipeline (self-hosted, photos never leave the box)
+### ML pipeline (self-hosted, photos never leave the box)
 
 ```mermaid
 flowchart LR
-    UP[New upload] --> QU[(job queue table)]
-    QU --> W[Background worker]
-    W -->|image| SC[ML sidecar container]
+    UP[New upload] --> W[Background worker<br>15s tick, backlog-driven]
+    W -->|thumbnail| SC[ML sidecar]
     SC -->|CLIP embedding 512-d| PV[(pgvector)]
-    SC -->|face embeddings| PV
+    SC -->|face embeddings| FC[Per-owner incremental<br>face clustering]
+    FC --> PV
     SC -->|zero-shot tags| TAGS[(tags table)]
     PV --> SEARCH[Free-text semantic search<br>+ find-similar]
-    PV --> FACES[Face clusters →<br>named person galleries]
-    TAGS --> AUTOG[Automatic galleries:<br>people, places, things, time]
-    META[(EXIF: taken-at + GPS)] --> AUTOG
+    PV --> FACES[People galleries<br>with naming]
+    TAGS --> CHIPS[Tag chips on photos]
 ```
+
+Search precision uses a relative cut (results within 0.035 of the best hit)
+plus a contrast baseline (results must not trail the generic "a photo"
+embedding by more than 0.11) — constants measured, not guessed, and tunable
+via `picops.ml.*` properties. Face/person data is owner-only, like EXIF.
 
 ## Stack
 
