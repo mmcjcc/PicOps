@@ -26,6 +26,9 @@ public interface PictureRepository extends JpaRepository<Picture, UUID> {
     @Query("select p.cleanData from Picture p where p.id = :id")
     Optional<byte[]> findCleanData(@Param("id") UUID id);
 
+    @Query("select p.meta from Picture p where p.id = :id")
+    Optional<String> findMeta(@Param("id") UUID id);
+
     List<Info> findByAlbumIdOrderByCreatedAtAsc(UUID albumId);
 
     @Query("select p.id from Picture p where p.album.id = :albumId order by p.createdAt asc")

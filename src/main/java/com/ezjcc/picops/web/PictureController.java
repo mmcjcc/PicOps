@@ -100,6 +100,10 @@ public class PictureController {
             }
             model.addAttribute("metaLine", meta.isEmpty() ? null : meta.toString());
         });
+        if (album.isOwnedBy(viewer)) {
+            // full EXIF can include GPS — owner's eyes only, like the original bytes
+            model.addAttribute("metaMap", pictures.fullMetadata(id));
+        }
         return "picture-view";
     }
 

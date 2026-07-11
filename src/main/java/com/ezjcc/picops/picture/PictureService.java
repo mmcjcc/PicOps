@@ -140,6 +140,21 @@ public class PictureService {
         return pictures.findInfoById(pictureId);
     }
 
+    /** Full EXIF dump for display. Caller enforces owner-only visibility. */
+    @Transactional(readOnly = true)
+    public java.util.Map<String, String> fullMetadata(UUID pictureId) {
+        String json = pictures.findMeta(pictureId).orElse(null);
+        if (json == null || json.isBlank() || json.equals("{}")) {
+            return java.util.Map.of();
+        }
+        try {
+            return new com.fasterxml.jackson.databind.ObjectMapper().readValue(json,
+                new com.fasterxml.jackson.core.type.TypeReference<java.util.LinkedHashMap<String, String>>() {});
+        } catch (Exception e) {
+            return java.util.Map.of();
+        }
+    }
+
     @Transactional(readOnly = true)
     public byte[] thumbData(UUID pictureId, User viewer) {
         albumForPicture(pictureId, viewer);

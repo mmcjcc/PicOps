@@ -266,3 +266,17 @@ a { color: var(--accent); }
 .uplist li { padding: 3px 0; }
 .uplist .up-ok { color: var(--good); }
 .uplist .up-bad { color: var(--danger); }
+.photostage a { display: block; cursor: zoom-in; }
+.metapanel {
+  margin-top: 14px; background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 10px 14px; font-size: 13px;
+}
+.metapanel summary { cursor: pointer; color: var(--muted); font-weight: 600; }
+.metatable-wrap { overflow-x: auto; margin-top: 10px; }
+.metatable { border-collapse: collapse; width: 100%; }
+.metatable td {
+  padding: 4px 10px 4px 0; vertical-align: top; border-top: 1px solid var(--line);
+  color: var(--ink);
+}
+.metatable td:first-child { color: var(--muted); white-space: nowrap; max-width: 340px;
+  overflow: hidden; text-overflow: ellipsis; }

@@ -49,9 +49,27 @@
     </div>
 
     <div class="photostage">
-        <img th:src="@{/pictures/{id}(id=${picId})}" alt="photo">
+        <a th:href="@{/pictures/{id}(id=${picId})}" target="_blank" rel="noopener"
+           title="Open full-size image">
+            <img th:src="@{/pictures/{id}(id=${picId})}" alt="photo">
+        </a>
     </div>
-    <p class="photometa" th:if="${metaLine}" style="margin-top:8px" th:text="${metaLine}"></p>
+    <p class="photometa" style="margin-top:8px">
+        <span th:if="${metaLine}" th:text="${metaLine}"></span>
+        <span th:if="${metaLine}"> · </span>click the photo for full size
+    </p>
+
+    <details class="metapanel" th:if="${metaMap != null and !metaMap.isEmpty()}">
+        <summary th:text="'Full metadata (' + ${metaMap.size()} + ' fields, owner-only)'">Full metadata</summary>
+        <div class="metatable-wrap">
+            <table class="metatable">
+                <tr th:each="e : ${metaMap}">
+                    <td th:text="${e.key}">key</td>
+                    <td th:text="${e.value}">value</td>
+                </tr>
+            </table>
+        </div>
+    </details>
 
     <section class="comments">
         <h2>Comments <span th:if="${!comments.isEmpty()}" th:text="'(' + ${#lists.size(comments)} + ')'"></span></h2>
