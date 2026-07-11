@@ -51,6 +51,7 @@
     <div class="photostage">
         <img th:src="@{/pictures/{id}(id=${picId})}" alt="photo">
     </div>
+    <p class="photometa" th:if="${metaLine}" style="margin-top:8px" th:text="${metaLine}"></p>
 
     <section class="comments">
         <h2>Comments <span th:if="${!comments.isEmpty()}" th:text="'(' + ${#lists.size(comments)} + ')'"></span></h2>

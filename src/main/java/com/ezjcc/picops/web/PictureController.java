@@ -23,6 +23,10 @@ import org.springframework.web.util.UriUtils;
 @Controller
 public class PictureController {
 
+    private static final java.time.format.DateTimeFormatter TAKEN =
+        java.time.format.DateTimeFormatter.ofPattern("MMM d, uuuu")
+            .withZone(java.time.ZoneId.systemDefault());
+
     private final PictureService pictures;
     private final CommentService comments;
     private final CurrentUser currentUser;
@@ -50,7 +54,11 @@ public class PictureController {
     @GetMapping("/pictures/{id}")
     public ResponseEntity<byte[]> full(@PathVariable UUID id, Principal principal) {
         User viewer = currentUser.orNull(principal);
-        byte[] data = pictures.imageData(id, viewer);
+        Album album = pictures.albumForPicture(id, viewer);
+        // owner gets original bytes (full EXIF); everyone else the stripped variant
+        byte[] data = album.isOwnedBy(viewer)
+            ? pictures.imageData(id, viewer)
+            : pictures.cleanImageData(id, viewer);
         return ResponseEntity.ok()
             .contentType(MediaType.parseMediaType(pictures.contentType(id)))
             .cacheControl(CacheControl.maxAge(Duration.ofHours(1)).cachePrivate())
@@ -82,6 +90,16 @@ public class PictureController {
         model.addAttribute("prevId", neighbors[0]);
         model.addAttribute("nextId", neighbors[1]);
         model.addAttribute("comments", comments.listForPicture(id, viewer));
+        pictures.info(id).ifPresent(info -> {
+            StringBuilder meta = new StringBuilder();
+            if (info.getTakenAt() != null) {
+                meta.append("Taken ").append(TAKEN.format(info.getTakenAt()));
+            }
+            if (info.getCamera() != null) {
+                meta.append(meta.isEmpty() ? "" : " · ").append(info.getCamera());
+            }
+            model.addAttribute("metaLine", meta.isEmpty() ? null : meta.toString());
+        });
         return "picture-view";
     }
 

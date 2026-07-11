@@ -17,7 +17,14 @@ public interface PictureRepository extends JpaRepository<Picture, UUID> {
         String getTitle();
         long getSizeBytes();
         Instant getCreatedAt();
+        Instant getTakenAt();
+        String getCamera();
     }
+
+    Optional<Info> findInfoById(UUID id);
+
+    @Query("select p.cleanData from Picture p where p.id = :id")
+    Optional<byte[]> findCleanData(@Param("id") UUID id);
 
     List<Info> findByAlbumIdOrderByCreatedAtAsc(UUID albumId);
 

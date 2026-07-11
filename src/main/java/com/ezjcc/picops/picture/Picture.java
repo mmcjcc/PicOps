@@ -13,6 +13,8 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import java.time.Instant;
 import java.util.UUID;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(name = "pictures")
@@ -47,6 +49,28 @@ public class Picture {
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
+    @Column(name = "taken_at")
+    private Instant takenAt;
+
+    @Column(length = 120)
+    private String camera;
+
+    @Column(name = "gps_lat")
+    private Double gpsLat;
+
+    @Column(name = "gps_lon")
+    private Double gpsLon;
+
+    private Short orientation;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(columnDefinition = "jsonb")
+    private String meta;
+
+    /** Metadata-stripped, orientation-applied variant served to non-owners. */
+    @Column(name = "clean_data")
+    private byte[] cleanData;
+
     protected Picture() {
     }
 
@@ -72,6 +96,20 @@ public class Picture {
     public String getDescription() { return description; }
     public Instant getCreatedAt() { return createdAt; }
 
+    public Instant getTakenAt() { return takenAt; }
+    public String getCamera() { return camera; }
+    public Double getGpsLat() { return gpsLat; }
+    public Double getGpsLon() { return gpsLon; }
+    public byte[] getData() { return data; }
+    public byte[] getCleanData() { return cleanData; }
+
     public void setTitle(String title) { this.title = title; }
     public void setDescription(String description) { this.description = description; }
+    public void setTakenAt(Instant takenAt) { this.takenAt = takenAt; }
+    public void setCamera(String camera) { this.camera = camera; }
+    public void setGpsLat(Double gpsLat) { this.gpsLat = gpsLat; }
+    public void setGpsLon(Double gpsLon) { this.gpsLon = gpsLon; }
+    public void setOrientation(Short orientation) { this.orientation = orientation; }
+    public void setMeta(String meta) { this.meta = meta; }
+    public void setCleanData(byte[] cleanData) { this.cleanData = cleanData; }
 }

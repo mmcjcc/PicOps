@@ -116,5 +116,7 @@ Flyway migrations · PostgreSQL 16 · GitHub Actions (build + CodeQL)
 - [x] Slice 4 — comments, search, public profile page (/u/username), prev/next photo nav
 - [x] Slice 5 — signup with email activation (Mailpit at http://localhost:8025 in dev)
 - [x] Slice 6 — drag-and-drop bulk upload with per-file status
-- [ ] Slice 7 — Google OAuth (needs client credentials), inline-comment polish
-- [ ] Slice 8 — deployment (Azure and/or home microserver; storage backend decision)
+- [x] Slice 7 — EXIF metadata extraction, orientation fix, owner-only originals (GPS privacy)
+- [ ] Slice 8 — ML sidecar: CLIP semantic search, faces, auto-galleries (pgvector)
+- [ ] Slice 9 — Google OAuth (needs client credentials), timeline view, bulk download
+- [ ] Slice 10 — storage backend (MinIO/S3) + deployment (home microserver + Azure demo)

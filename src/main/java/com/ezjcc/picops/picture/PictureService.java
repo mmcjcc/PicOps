@@ -21,15 +21,17 @@ public class PictureService {
     private final ThumbnailRepository thumbnails;
     private final AlbumService albums;
     private final ImageService images;
+    private final MetadataService metadata;
     private final long quotaBytes;
 
     public PictureService(PictureRepository pictures, ThumbnailRepository thumbnails,
-                          AlbumService albums, ImageService images,
+                          AlbumService albums, ImageService images, MetadataService metadata,
                           @Value("${picops.quota-mb}") long quotaMb) {
         this.pictures = pictures;
         this.thumbnails = thumbnails;
         this.albums = albums;
         this.images = images;
+        this.metadata = metadata;
         this.quotaBytes = quotaMb * 1024 * 1024;
     }
 
@@ -58,9 +60,18 @@ public class PictureService {
                     rejected.add(name + " (not a supported image)");
                     continue;
                 }
-                Picture pic = pictures.save(
-                    new Picture(album, v.bytes(), v.contentType(), name, bytes.length));
-                thumbnails.save(new Thumbnail(pic.getId(), images.thumbnailJpeg(v.image())));
+                MetadataService.Extracted ex = metadata.extract(bytes);
+                var oriented = metadata.orient(v.image(), ex.orientation());
+                Picture pic = new Picture(album, v.bytes(), v.contentType(), name, bytes.length);
+                pic.setTakenAt(ex.takenAt());
+                pic.setCamera(ex.camera());
+                pic.setGpsLat(ex.lat());
+                pic.setGpsLon(ex.lon());
+                pic.setOrientation((short) ex.orientation());
+                pic.setMeta(ex.metaJson());
+                pic.setCleanData(metadata.stripped(oriented, v.contentType()));
+                pic = pictures.save(pic);
+                thumbnails.save(new Thumbnail(pic.getId(), images.thumbnailJpeg(oriented)));
                 used += bytes.length;
                 stored++;
                 if (album.getCoverPictureId() == null) {
@@ -94,6 +105,39 @@ public class PictureService {
     @Transactional(readOnly = true)
     public String contentType(UUID pictureId) {
         return pictures.findContentType(pictureId).orElse("image/jpeg");
+    }
+
+    /**
+     * The metadata-stripped variant for non-owners. Pictures uploaded before
+     * this feature get their variant generated and stored on first request.
+     */
+    public byte[] cleanImageData(UUID pictureId, User viewer) {
+        albumForPicture(pictureId, viewer);
+        byte[] clean = pictures.findCleanData(pictureId).orElse(null);
+        if (clean != null) {
+            return clean;
+        }
+        Picture pic = pictures.findById(pictureId)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        try {
+            ImageService.Validated v = images.validate(pic.getData());
+            if (v == null) {
+                return pic.getData();
+            }
+            MetadataService.Extracted ex = metadata.extract(pic.getData());
+            clean = metadata.stripped(metadata.orient(v.image(), ex.orientation()),
+                v.contentType());
+            pic.setCleanData(clean);
+            return clean;
+        } catch (Exception e) {
+            // stripping must fail closed for privacy: no clean variant, no image
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public java.util.Optional<PictureRepository.Info> info(UUID pictureId) {
+        return pictures.findInfoById(pictureId);
     }
 
     @Transactional(readOnly = true)
