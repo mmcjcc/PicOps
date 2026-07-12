@@ -104,6 +104,22 @@ public class FaceRepository {
             WHERE f.person_id = ?""", UUID.class, personId);
     }
 
+    /** All faces belonging to one person, best detections first. */
+    public List<FaceRow> facesOfPerson(UUID personId) {
+        return jdbc.query("""
+            SELECT f.id, f.picture_id, f.person_id, pe.name, f.x1, f.y1, f.x2, f.y2, a.owner_id
+            FROM faces f
+            JOIN pictures p ON p.id = f.picture_id
+            JOIN albums a ON a.id = p.album_id
+            LEFT JOIN people pe ON pe.id = f.person_id
+            WHERE f.person_id = ?
+            ORDER BY f.det_score DESC""",
+            (rs, i) -> new FaceRow(rs.getObject(1, UUID.class), rs.getObject(2, UUID.class),
+                rs.getObject(3, UUID.class), rs.getString(4), rs.getInt(5), rs.getInt(6),
+                rs.getInt(7), rs.getInt(8), rs.getObject(9, UUID.class)),
+            personId);
+    }
+
     public List<FaceRow> facesForPicture(UUID pictureId) {
         return jdbc.query("""
             SELECT f.id, f.picture_id, f.person_id, pe.name, f.x1, f.y1, f.x2, f.y2, a.owner_id

@@ -39,13 +39,15 @@
         <button class="btn" type="submit">Save</button>
     </form>
 
-    <div class="photogrid" th:if="${!pictures.isEmpty()}">
-        <a class="photo" th:each="id : ${pictures}" th:href="@{/pictures/{id}/view(id=${id})}">
-            <img th:src="@{/pictures/{id}/thumb(id=${id})}" alt="photo" loading="lazy">
+    <p class="subline">Each face below links to the photo it was found in.</p>
+    <div class="facesgrid" th:if="${!faces.isEmpty()}">
+        <a class="faceitem" th:each="f : ${faces}"
+           th:href="@{/pictures/{id}/view(id=${f.pictureId})}">
+            <img th:src="@{/faces/{id}/crop(id=${f.id})}" alt="face" loading="lazy">
         </a>
     </div>
-    <div class="empty" th:if="${pictures.isEmpty()}">
-        <b>No photos</b> This person has no remaining photos.
+    <div class="empty" th:if="${faces.isEmpty()}">
+        <b>No faces</b> This person has no remaining photos.
     </div>
 </main>
 </body>

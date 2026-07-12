@@ -26,14 +26,21 @@ import org.springframework.web.server.ResponseStatusException;
 @Controller
 public class PeopleController {
 
+    /** Face detection ran on 480px-wide thumbnails; bboxes are in that space. */
+    private static final int ANALYSIS_WIDTH = 480;
+    private static final int CROP_MAX = 320;
+
     private final FaceRepository faces;
     private final ThumbnailRepository thumbnails;
+    private final com.ezjcc.picops.picture.PictureService pictures;
     private final CurrentUser currentUser;
 
     public PeopleController(FaceRepository faces, ThumbnailRepository thumbnails,
+                            com.ezjcc.picops.picture.PictureService pictures,
                             CurrentUser currentUser) {
         this.faces = faces;
         this.thumbnails = thumbnails;
+        this.pictures = pictures;
         this.currentUser = currentUser;
     }
 
@@ -52,8 +59,9 @@ public class PeopleController {
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         model.addAttribute("personId", id);
         model.addAttribute("personName", name);
-        model.addAttribute("pictures", faces.picturesForPerson(id).stream()
-            .map(UUID::toString).toList());
+        // this person's own face crops (not whole photos), so multi-person
+        // photos are never ambiguous about who the cluster means
+        model.addAttribute("faces", faces.facesOfPerson(id));
         model.addAttribute("initials", CurrentUser.initials(user.getDisplayName()));
         return "person";
     }
@@ -68,7 +76,12 @@ public class PeopleController {
         return "redirect:/people/" + id;
     }
 
-    /** Face crop from the thumbnail, with a margin so it reads as a portrait. */
+    /**
+     * Face crop at identification-grade resolution: bbox coords are in
+     * thumbnail space, so scale them up and cut from the full-size image
+     * (the stripped variant — already orientation-applied, like the
+     * thumbnail the detector saw).
+     */
     @GetMapping("/faces/{id}/crop")
     public ResponseEntity<byte[]> crop(@PathVariable UUID id, Principal principal)
             throws Exception {
@@ -78,19 +91,39 @@ public class PeopleController {
         if (!face.ownerId().equals(user.getId())) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        byte[] thumb = thumbnails.findData(face.pictureId())
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        BufferedImage img = ImageIO.read(new ByteArrayInputStream(thumb));
-        int mx = (face.x2() - face.x1()) / 4, my = (face.y2() - face.y1()) / 4;
-        int x = Math.max(0, face.x1() - mx);
-        int y = Math.max(0, face.y1() - my);
-        int w = Math.min(img.getWidth() - x, face.x2() - face.x1() + 2 * mx);
-        int h = Math.min(img.getHeight() - y, face.y2() - face.y1() + 2 * my);
+        byte[] source = pictures.cleanImageData(face.pictureId(), user);
+        BufferedImage img = ImageIO.read(new ByteArrayInputStream(source));
+        if (img == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        double scale = img.getWidth() / (double) Math.min(ANALYSIS_WIDTH, img.getWidth());
+        int fx1 = (int) Math.round(face.x1() * scale);
+        int fy1 = (int) Math.round(face.y1() * scale);
+        int fx2 = (int) Math.round(face.x2() * scale);
+        int fy2 = (int) Math.round(face.y2() * scale);
+        int mx = (fx2 - fx1) / 4, my = (fy2 - fy1) / 4;
+        int x = Math.max(0, fx1 - mx);
+        int y = Math.max(0, fy1 - my);
+        int w = Math.min(img.getWidth() - x, fx2 - fx1 + 2 * mx);
+        int h = Math.min(img.getHeight() - y, fy2 - fy1 + 2 * my);
         if (w <= 0 || h <= 0) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
+        BufferedImage crop = img.getSubimage(x, y, w, h);
+        if (crop.getWidth() > CROP_MAX || crop.getHeight() > CROP_MAX) {
+            double down = CROP_MAX / (double) Math.max(crop.getWidth(), crop.getHeight());
+            int dw = Math.max(1, (int) (crop.getWidth() * down));
+            int dh = Math.max(1, (int) (crop.getHeight() * down));
+            BufferedImage scaled = new BufferedImage(dw, dh, BufferedImage.TYPE_INT_RGB);
+            java.awt.Graphics2D g = scaled.createGraphics();
+            g.setRenderingHint(java.awt.RenderingHints.KEY_INTERPOLATION,
+                java.awt.RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+            g.drawImage(crop, 0, 0, dw, dh, null);
+            g.dispose();
+            crop = scaled;
+        }
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ImageIO.write(img.getSubimage(x, y, w, h), "jpeg", out);
+        ImageIO.write(crop, "jpeg", out);
         return ResponseEntity.ok()
             .contentType(MediaType.IMAGE_JPEG)
             .cacheControl(CacheControl.maxAge(Duration.ofHours(6)).cachePrivate())
