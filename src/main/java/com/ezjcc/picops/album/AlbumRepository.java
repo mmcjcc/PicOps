@@ -23,6 +23,20 @@ public interface AlbumRepository extends JpaRepository<Album, UUID> {
     List<Album> searchInternal(@Param("uid") UUID userId, @Param("q") String q,
                                @Param("pub") Album.Visibility pub);
 
+    /** Random public albums with picture counts — the 2005 displaypubalbums, reborn. */
+    @Query(value = "SELECT a.id, a.title, a.visibility, a.cover_picture_id, a.updated_at, "
+                 + "(SELECT count(*) FROM pictures p WHERE p.album_id = a.id) "
+                 + "FROM albums a WHERE a.visibility = 'PUBLIC' "
+                 + "ORDER BY random() LIMIT :n", nativeQuery = true)
+    List<Object[]> randomPublic(@Param("n") int n);
+
+    @Query(value = "SELECT a.id, a.title, a.visibility, a.cover_picture_id, a.updated_at, "
+                 + "(SELECT count(*) FROM pictures p WHERE p.album_id = a.id) "
+                 + "FROM albums a WHERE a.visibility = 'PUBLIC' "
+                 + "AND a.title ILIKE '%' || :q || '%' "
+                 + "ORDER BY a.updated_at DESC LIMIT 24", nativeQuery = true)
+    List<Object[]> searchPublic(@Param("q") String q);
+
     /** album id -> picture count, without needing the Picture entity loaded. */
     @Query(value = "SELECT a.id, (SELECT count(*) FROM pictures p WHERE p.album_id = a.id) "
                  + "FROM albums a WHERE a.owner_id = :ownerId", nativeQuery = true)

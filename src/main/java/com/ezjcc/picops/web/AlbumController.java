@@ -28,12 +28,22 @@ public class AlbumController {
     }
 
     @GetMapping("/")
-    public String home(Principal principal, Model model) {
-        User user = currentUser.require(principal);
-        List<AlbumService.Card> cards = albums.cardsFor(user);
+    public String home(Principal principal,
+                       @RequestParam(required = false) String q, Model model) {
+        User user = currentUser.orNull(principal);
+        if (user == null) {
+            // anonymous landing: random public albums + public title search
+            String query = q == null ? "" : q.trim();
+            model.addAttribute("q", query);
+            model.addAttribute("cards", query.isEmpty()
+                ? albums.publicRandomCards(12)
+                : albums.publicSearchCards(query));
+            return "explore";
+        }
         model.addAttribute("displayName", user.getDisplayName());
         model.addAttribute("initials", CurrentUser.initials(user.getDisplayName()));
-        model.addAttribute("cards", cards);
+        model.addAttribute("cards", albums.cardsFor(user));
+        model.addAttribute("discover", albums.publicRandomCards(8));
         return "home";
     }
 

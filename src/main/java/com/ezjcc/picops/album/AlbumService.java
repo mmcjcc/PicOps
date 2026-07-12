@@ -51,6 +51,36 @@ public class AlbumService {
             .toList();
     }
 
+    @Transactional(readOnly = true)
+    public List<Card> publicRandomCards(int limit) {
+        return mapNativeCards(albums.randomPublic(limit));
+    }
+
+    @Transactional(readOnly = true)
+    public List<Card> publicSearchCards(String q) {
+        return mapNativeCards(albums.searchPublic(q));
+    }
+
+    private List<Card> mapNativeCards(List<Object[]> rows) {
+        return rows.stream()
+            .map(r -> new Card((UUID) r[0], (String) r[1], (String) r[2],
+                ((Number) r[5]).longValue(), (UUID) r[3], DATE.format(toInstant(r[4]))))
+            .toList();
+    }
+
+    private static java.time.Instant toInstant(Object o) {
+        if (o instanceof java.sql.Timestamp t) {
+            return t.toInstant();
+        }
+        if (o instanceof java.time.OffsetDateTime od) {
+            return od.toInstant();
+        }
+        if (o instanceof java.time.Instant i) {
+            return i;
+        }
+        return java.time.Instant.now();
+    }
+
     /** Album for display: visible to its owner always, to everyone when public. */
     @Transactional(readOnly = true)
     public Album getForView(UUID id, User viewer) {

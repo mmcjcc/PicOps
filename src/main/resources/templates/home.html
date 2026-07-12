@@ -68,6 +68,27 @@
         Create your first album and start uploading photos.
         <div style="margin-top:16px"><a class="btn" th:href="@{/albums/new}">＋ New album</a></div>
     </div>
+
+    <section th:if="${discover != null and !discover.isEmpty()}" style="margin-top:40px">
+        <h2 style="font-size:17px;font-weight:650;margin:0 0 4px">Discover</h2>
+        <p class="subline">A random selection of public albums from all members.</p>
+        <div class="grid">
+            <a class="card" th:each="c : ${discover}" th:href="@{/albums/{id}(id=${c.id})}">
+                <div class="cover">
+                    <img th:if="${c.coverId != null}" th:src="@{/pictures/{id}/thumb(id=${c.coverId})}"
+                         th:alt="${c.title}" loading="lazy">
+                    <div th:if="${c.coverId == null}" class="cover-blank"></div>
+                </div>
+                <div class="body">
+                    <div class="title" th:text="${c.title}">Album</div>
+                    <div class="meta">
+                        <span th:text="${c.pictureCount}">0</span> photos ·
+                        updated <span th:text="${c.updated}">today</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </section>
 </main>
 </body>
 </html>

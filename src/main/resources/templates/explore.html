@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PicOps — Online Photo System</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<header class="appbar">
+    <a class="brand" th:href="@{/}">
+        <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true">
+            <rect x="1" y="3" width="20" height="16" rx="3" fill="var(--accent)"/>
+            <circle cx="4.5" cy="6.5" r="1.1" fill="var(--bg)"/><circle cx="4.5" cy="11" r="1.1" fill="var(--bg)"/><circle cx="4.5" cy="15.5" r="1.1" fill="var(--bg)"/>
+            <circle cx="17.5" cy="6.5" r="1.1" fill="var(--bg)"/><circle cx="17.5" cy="11" r="1.1" fill="var(--bg)"/><circle cx="17.5" cy="15.5" r="1.1" fill="var(--bg)"/>
+            <circle cx="11" cy="11" r="3.4" fill="none" stroke="var(--bg)" stroke-width="1.6"/>
+        </svg>
+        PicOps
+    </a>
+    <form class="searchbox" th:action="@{/}" method="get">
+        <input type="search" name="q" th:value="${q}" placeholder="Search public albums…">
+    </form>
+    <div class="appbar-right">
+        <a class="btn ghost" th:href="@{/signup}">Sign up</a>
+        <a class="btn" th:href="@{/login}">Sign in</a>
+    </div>
+</header>
+
+<main class="appmain">
+    <div class="pagehead">
+        <div>
+            <h1 th:text="${q.isEmpty()} ? 'Explore public albums' : 'Public albums matching “' + ${q} + '”'">Explore</h1>
+            <div class="sub" th:if="${q.isEmpty()}">A random selection from everyone's shared albums — refresh for more.</div>
+            <div class="sub" th:if="${!q.isEmpty()}"><a th:href="@{/}">← Back to random selection</a></div>
+        </div>
+    </div>
+
+    <div class="grid" th:if="${!cards.isEmpty()}">
+        <a class="card" th:each="c : ${cards}" th:href="@{/albums/{id}(id=${c.id})}">
+            <div class="cover">
+                <img th:if="${c.coverId != null}" th:src="@{/pictures/{id}/thumb(id=${c.coverId})}"
+                     th:alt="${c.title}" loading="lazy">
+                <div th:if="${c.coverId == null}" class="cover-blank"></div>
+            </div>
+            <div class="body">
+                <div class="title" th:text="${c.title}">Album</div>
+                <div class="meta">
+                    <span th:text="${c.pictureCount}">0</span> photos ·
+                    updated <span th:text="${c.updated}">today</span>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <div class="empty" th:if="${cards.isEmpty()}">
+        <b th:text="${q.isEmpty()} ? 'Nothing shared yet' : 'No matches'">Nothing here</b>
+        <span th:if="${q.isEmpty()}">When members make albums public, they show up here.</span>
+        <span th:if="${!q.isEmpty()}">Try a different term, or <a th:href="@{/}">browse the random selection</a>.</span>
+    </div>
+</main>
+</body>
+</html>

@@ -20,7 +20,7 @@ public class SecurityConfig {
                 .requestMatchers("/login", "/signup", "/activate", "/css/**", "/js/**", "/error").permitAll()
                 // public-album views; controllers enforce per-album visibility,
                 // continuing the 2005 thesis: access is mediated by the app, not the URL
-                .requestMatchers(HttpMethod.GET, "/albums/*", "/pictures/**", "/u/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/", "/albums/*", "/pictures/**", "/u/**").permitAll()
                 .anyRequest().authenticated())
             .formLogin(form -> form
                 .loginPage("/login")
