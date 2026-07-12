@@ -294,6 +294,12 @@ a { color: var(--accent); }
 .personcard:hover .facecircle { border-color: var(--accent); }
 .pname { font-weight: 600; font-size: 14px; }
 .pcount { color: var(--muted); font-size: 12.5px; }
+.nameform { display: flex; gap: 5px; width: 100%; margin-top: 4px; }
+.nameform input[type="text"] {
+  flex: 1; min-width: 0; background: var(--surface-2); border: 1px solid var(--line);
+  border-radius: 7px; padding: 5px 9px; font: inherit; font-size: 13px; color: var(--ink);
+}
+.nameform .btn { padding: 5px 10px; }
 .facesgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
 .faceitem { display: block; aspect-ratio: 1; border-radius: 10px; overflow: hidden;
   border: 1px solid var(--line); background: var(--surface-2); }

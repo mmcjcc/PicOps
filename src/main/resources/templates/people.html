@@ -17,6 +17,9 @@
         </svg>
         PicOps
     </a>
+    <form class="searchbox" th:action="@{/search}" method="get">
+        <input type="search" name="q" placeholder="Search albums, photos, people…">
+    </form>
     <div class="appbar-right">
         <form th:action="@{/logout}" method="post" style="margin:0">
             <button class="btn ghost" type="submit">Sign out</button>
@@ -34,11 +37,18 @@
     </div>
 
     <div class="peoplegrid" th:if="${!people.isEmpty()}">
-        <a class="personcard" th:each="p : ${people}" th:href="@{/people/{id}(id=${p.id})}">
-            <img class="facecircle" th:src="@{/faces/{id}/crop(id=${p.sampleFaceId})}" alt="face">
-            <div class="pname" th:text="${p.name != null ? p.name : 'Unnamed'}">Name</div>
-            <div class="pcount"><span th:text="${p.faceCount}">0</span> photos</div>
-        </a>
+        <div class="personcard" th:each="p : ${people}">
+            <a th:href="@{/people/{id}(id=${p.id})}" style="display:grid;justify-items:center;gap:6px;text-decoration:none;color:inherit">
+                <img class="facecircle" th:src="@{/faces/{id}/crop(id=${p.sampleFaceId})}" alt="face">
+                <div class="pcount"><span th:text="${p.faceCount}">0</span> photos</div>
+            </a>
+            <form class="nameform" th:action="@{/people/{id}/name(id=${p.id})}" method="post">
+                <input type="hidden" name="back" value="list">
+                <input type="text" name="name" maxlength="60" th:value="${p.name}"
+                       placeholder="Name…" aria-label="Person name">
+                <button class="btn" type="submit" title="Save name">✓</button>
+            </form>
+        </div>
     </div>
 
     <div class="empty" th:if="${people.isEmpty()}">

@@ -85,6 +85,22 @@ public class FaceRepository {
             ownerId);
     }
 
+    /** Named people matching a search term, for the owner. */
+    public List<PersonRow> searchPeople(UUID ownerId, String q) {
+        return jdbc.query("""
+            SELECT pe.id, pe.name, count(f.id) AS faces,
+                   (SELECT f2.id FROM faces f2 WHERE f2.person_id = pe.id
+                    ORDER BY f2.det_score DESC LIMIT 1) AS sample
+            FROM people pe LEFT JOIN faces f ON f.person_id = pe.id
+            WHERE pe.owner_id = ? AND pe.name ILIKE '%' || ? || '%'
+            GROUP BY pe.id, pe.name
+            HAVING count(f.id) > 0
+            ORDER BY count(f.id) DESC""",
+            (rs, i) -> new PersonRow(rs.getObject(1, UUID.class), rs.getString(2),
+                rs.getLong(3), rs.getObject(4, UUID.class)),
+            ownerId, q);
+    }
+
     public Optional<String> personNameIfOwned(UUID personId, UUID ownerId) {
         List<String> names = jdbc.query(
             "SELECT coalesce(name, '') FROM people WHERE id = ? AND owner_id = ?",

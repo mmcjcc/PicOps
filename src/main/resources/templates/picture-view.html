@@ -17,7 +17,12 @@
         </svg>
         PicOps
     </a>
+    <form class="searchbox" th:action="${authenticated} ? @{/search} : @{/}" method="get">
+        <input type="search" name="q"
+               th:placeholder="${authenticated} ? 'Search albums, photos, people…' : 'Search public albums…'">
+    </form>
     <div class="appbar-right" th:if="${authenticated}">
+        <a class="btn ghost" th:href="@{/people}">People</a>
         <form th:action="@{/logout}" method="post" style="margin:0">
             <button class="btn ghost" type="submit">Sign out</button>
         </form>

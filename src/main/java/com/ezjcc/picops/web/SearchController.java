@@ -19,16 +19,19 @@ public class SearchController {
     private final CurrentUser currentUser;
     private final com.ezjcc.picops.ml.MlClient mlClient;
     private final com.ezjcc.picops.ml.MlRepository mlRepo;
+    private final com.ezjcc.picops.ml.FaceRepository faceRepo;
 
     public SearchController(AlbumRepository albums, PictureRepository pictures,
                             CurrentUser currentUser,
                             com.ezjcc.picops.ml.MlClient mlClient,
-                            com.ezjcc.picops.ml.MlRepository mlRepo) {
+                            com.ezjcc.picops.ml.MlRepository mlRepo,
+                            com.ezjcc.picops.ml.FaceRepository faceRepo) {
         this.albums = albums;
         this.pictures = pictures;
         this.currentUser = currentUser;
         this.mlClient = mlClient;
         this.mlRepo = mlRepo;
+        this.faceRepo = faceRepo;
     }
 
     public record AlbumHit(String id, String title, String visibility) {}
@@ -88,6 +91,8 @@ public class SearchController {
         model.addAttribute("albumHits", albumHits);
         model.addAttribute("photoHits", photoHits);
         model.addAttribute("visualHits", visualHits);
+        model.addAttribute("peopleHits", query.isEmpty()
+            ? List.of() : faceRepo.searchPeople(user.getId(), query));
         model.addAttribute("initials", CurrentUser.initials(user.getDisplayName()));
         return "search";
     }

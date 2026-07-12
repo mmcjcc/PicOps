@@ -68,12 +68,13 @@ public class PeopleController {
 
     @PostMapping("/people/{id}/name")
     public String rename(@PathVariable UUID id, Principal principal,
-                         @RequestParam String name) {
+                         @RequestParam String name,
+                         @RequestParam(required = false) String back) {
         User user = currentUser.require(principal);
         faces.personNameIfOwned(id, user.getId())
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         faces.renamePerson(id, user.getId(), name);
-        return "redirect:/people/" + id;
+        return "list".equals(back) ? "redirect:/people" : "redirect:/people/" + id;
     }
 
     /**

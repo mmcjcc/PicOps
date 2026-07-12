@@ -17,6 +17,9 @@
         </svg>
         PicOps
     </a>
+    <form class="searchbox" th:action="@{/search}" method="get">
+        <input type="search" name="q" placeholder="Search albums, photos, people…">
+    </form>
     <div class="appbar-right">
         <form th:action="@{/logout}" method="post" style="margin:0">
             <button class="btn ghost" type="submit">Sign out</button>
