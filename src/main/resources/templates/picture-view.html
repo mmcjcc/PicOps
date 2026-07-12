@@ -58,6 +58,10 @@
         <span th:if="${metaLine}" th:text="${metaLine}"></span>
         <span th:if="${metaLine}"> · </span>click the photo for full size
     </p>
+    <p class="photometa" th:if="${locationLine}">
+        📍 <span th:text="${locationLine}">Somewhere</span>
+        <span style="opacity:.7">— visible only to you</span>
+    </p>
 
     <p class="tagrow" th:if="${tags != null and !tags.isEmpty()}">
         <a class="tagchip" th:each="t : ${tags}" th:href="@{/search(q=${t})}" th:text="${t}">tag</a>

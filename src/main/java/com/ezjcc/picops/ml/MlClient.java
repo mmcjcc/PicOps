@@ -15,6 +15,7 @@ public class MlClient {
     public record TextEmbedding(List<Double> embedding) {}
     public record FaceDet(List<Integer> bbox, double score, List<Double> embedding) {}
     public record Faces(List<FaceDet> faces) {}
+    public record Geo(String city, String state, String country) {}
 
     private final RestClient rest;
 
@@ -36,6 +37,14 @@ public class MlClient {
             .body(imageBytes)
             .retrieve()
             .body(Faces.class);
+    }
+
+    public Geo geocode(double lat, double lon) {
+        return rest.post().uri("/geocode")
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(java.util.Map.of("lat", lat, "lon", lon))
+            .retrieve()
+            .body(Geo.class);
     }
 
     public List<Double> embedText(String text) {

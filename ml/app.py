@@ -11,6 +11,8 @@ import os
 
 import numpy as np
 import open_clip
+import pycountry
+import reverse_geocoder
 import torch
 from fastapi import FastAPI, Request
 from insightface.app import FaceAnalysis
@@ -31,6 +33,11 @@ face_app = FaceAnalysis(name="buffalo_l",
                         providers=["CPUExecutionProvider"])
 face_app.prepare(ctx_id=0, det_size=(640, 640))
 FACE_MIN_SCORE = 0.55
+
+# Offline city-level reverse geocoding (GeoNames dataset, no external calls).
+# mode=1 keeps it single-process; the first search loads the dataset, so warm
+# it at startup rather than on the first real request.
+reverse_geocoder.search((0.0, 0.0), mode=1)
 
 # Zero-shot tag vocabulary: broad, personal-photo-oriented.
 LABELS = [
@@ -91,6 +98,23 @@ async def faces(request: Request):
     ]}
 
 
+@app.post("/geocode")
+async def geocode(payload: dict):
+    lat = float(payload["lat"])
+    lon = float(payload["lon"])
+    hit = reverse_geocoder.search((lat, lon), mode=1)[0]
+    country = hit.get("cc", "")
+    try:
+        match = pycountry.countries.get(alpha_2=country)
+        if match is not None:
+            country = match.name
+    except Exception:
+        pass
+    return {"city": hit.get("name", ""), "state": hit.get("admin1", ""),
+            "country": country}
+
+
 @app.get("/health")
 def health():
-    return {"ok": True, "model": f"{MODEL}/{PRETRAINED}", "faces": "buffalo_l"}
+    return {"ok": True, "model": f"{MODEL}/{PRETRAINED}", "faces": "buffalo_l",
+            "geocode": "geonames-offline"}

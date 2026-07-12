@@ -89,4 +89,23 @@ public class MlWorker {
             log.info("Detected {} face(s) in {} picture(s)", faces, batch.size());
         }
     }
+
+    @Scheduled(fixedDelayString = "${picops.ml.interval-ms:15000}", initialDelay = 30000)
+    public void geoTick() {
+        List<MlRepository.GeoTask> batch = repo.pendingGeocode(10);
+        int done = 0;
+        for (MlRepository.GeoTask task : batch) {
+            try {
+                MlClient.Geo geo = client.geocode(task.lat(), task.lon());
+                repo.updateLocation(task.pictureId(), geo.city(), geo.state(), geo.country());
+                done++;
+            } catch (Exception e) {
+                log.info("Geocode unavailable or failed ({}); will retry", e.getMessage());
+                return;
+            }
+        }
+        if (done > 0) {
+            log.info("Geocoded {} picture(s)", done);
+        }
+    }
 }

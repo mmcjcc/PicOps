@@ -110,6 +110,16 @@ public class PictureController {
             model.addAttribute("metaMap", pictures.fullMetadata(id));
             // face/person data is likewise owner-only
             model.addAttribute("faces", faceRepo.facesForPicture(id));
+            // location derives from GPS — owner-only too
+            pictures.info(id).ifPresent(info -> {
+                String loc = java.util.stream.Stream.of(info.getLocCity(),
+                        info.getLocState(), info.getLocCountry())
+                    .filter(s -> s != null && !s.isBlank())
+                    .collect(java.util.stream.Collectors.joining(", "));
+                if (!loc.isEmpty()) {
+                    model.addAttribute("locationLine", loc);
+                }
+            });
         }
         try {
             model.addAttribute("tags", mlRepo.tagsFor(id));

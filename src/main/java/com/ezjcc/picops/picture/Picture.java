@@ -74,6 +74,15 @@ public class Picture {
     @Column(name = "faces_scanned", nullable = false)
     private boolean facesScanned;
 
+    @Column(name = "loc_city", length = 120)
+    private String locCity;
+
+    @Column(name = "loc_state", length = 120)
+    private String locState;
+
+    @Column(name = "loc_country", length = 120)
+    private String locCountry;
+
     protected Picture() {
     }
 
@@ -105,6 +114,9 @@ public class Picture {
     public Double getGpsLon() { return gpsLon; }
     public byte[] getData() { return data; }
     public byte[] getCleanData() { return cleanData; }
+    public String getLocCity() { return locCity; }
+    public String getLocState() { return locState; }
+    public String getLocCountry() { return locCountry; }
 
     public void setTitle(String title) { this.title = title; }
     public void setDescription(String description) { this.description = description; }

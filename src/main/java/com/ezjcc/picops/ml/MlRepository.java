@@ -104,6 +104,30 @@ public class MlRepository {
             similarMaxDistance, pictureId, limit);
     }
 
+    public record GeoTask(UUID pictureId, double lat, double lon) {}
+
+    /** Pictures with GPS but no resolved location yet. */
+    public List<GeoTask> pendingGeocode(int limit) {
+        return jdbc.query("""
+            SELECT id, gps_lat, gps_lon FROM pictures
+            WHERE gps_lat IS NOT NULL AND gps_lon IS NOT NULL AND loc_country IS NULL
+            LIMIT ?""",
+            (rs, i) -> new GeoTask(rs.getObject(1, UUID.class), rs.getDouble(2), rs.getDouble(3)),
+            limit);
+    }
+
+    public void updateLocation(UUID pictureId, String city, String state, String country) {
+        jdbc.update("UPDATE pictures SET loc_city = ?, loc_state = ?, loc_country = ? WHERE id = ?",
+            clip(city), clip(state), clip(country), pictureId);
+    }
+
+    private static String clip(String s) {
+        if (s == null || s.isBlank()) {
+            return null;
+        }
+        return s.length() > 120 ? s.substring(0, 120) : s;
+    }
+
     public List<String> tagsFor(UUID pictureId) {
         return jdbc.queryForList(
             "SELECT tag FROM picture_tags WHERE picture_id = ? ORDER BY score DESC",

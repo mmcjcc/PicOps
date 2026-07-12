@@ -19,6 +19,9 @@ public interface PictureRepository extends JpaRepository<Picture, UUID> {
         Instant getCreatedAt();
         Instant getTakenAt();
         String getCamera();
+        String getLocCity();
+        String getLocState();
+        String getLocCountry();
     }
 
     Optional<Info> findInfoById(UUID id);
@@ -49,6 +52,10 @@ public interface PictureRepository extends JpaRepository<Picture, UUID> {
     @Query("select p.id as id, p.fileName as fileName, p.title as title, "
          + "p.sizeBytes as sizeBytes, p.createdAt as createdAt from Picture p "
          + "where p.album.owner.id = :uid and (lower(p.fileName) like lower(concat('%', :q, '%')) "
-         + "or lower(p.title) like lower(concat('%', :q, '%'))) order by p.createdAt desc")
+         + "or lower(p.title) like lower(concat('%', :q, '%')) "
+         + "or lower(coalesce(p.locCity, '')) like lower(concat('%', :q, '%')) "
+         + "or lower(coalesce(p.locState, '')) like lower(concat('%', :q, '%')) "
+         + "or lower(coalesce(p.locCountry, '')) like lower(concat('%', :q, '%'))) "
+         + "order by p.createdAt desc")
     List<Info> searchOwn(@Param("uid") UUID userId, @Param("q") String q);
 }
